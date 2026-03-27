@@ -20,17 +20,106 @@
     .brand-btn { padding: 5px 12px; border-radius: 17px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; background: transparent; color: #888; transition: all 0.2s; }
     .brand-btn.active { background: #43b02a; color: #fff; }
 
-    /* MAIN LAYOUT */
+    /* ===================== STORE SELECTION PAGE ===================== */
+    #storePage { display: block; }
+    #mainPage  { display: none; }
+
+    .sp-wrap { max-width: 520px; margin: 0 auto; padding: 0 0 40px; }
+
+    /* Hero search */
+    .sp-hero { background: #fff; padding: 18px 16px 14px; border-bottom: 1px solid #eee; }
+    .sp-location { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .sp-location-pin { font-size: 16px; }
+    .sp-search-wrap { position: relative; }
+    .sp-search { width: 100%; padding: 12px 16px 12px 42px; border: 1.5px solid #e0e0e0; border-radius: 28px; font-size: 15px; outline: none; background: #f7f7f7; color: #1a1a1a; }
+    .sp-search:focus { border-color: #43b02a; background: #fff; }
+    .sp-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; color: #888; pointer-events: none; }
+
+    /* Town filter pills */
+    .sp-towns { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; background: #fff; border-bottom: 1px solid #eee; scrollbar-width: none; }
+    .sp-towns::-webkit-scrollbar { display: none; }
+    .sp-town-pill { padding: 6px 14px; border-radius: 20px; border: 1.5px solid #e0e0e0; background: #fff; font-size: 12px; font-weight: 700; cursor: pointer; color: #555; white-space: nowrap; flex-shrink: 0; transition: all 0.18s; }
+    .sp-town-pill.active { background: #1a4d1f; color: #fff; border-color: #1a4d1f; }
+
+    /* Section header */
+    .sp-section { padding: 18px 16px 8px; font-size: 13px; font-weight: 800; color: #1a1a1a; letter-spacing: 0.1px; }
+
+    /* Store grid */
+    .sp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding: 0 10px 6px; }
+    @media (max-width: 360px) { .sp-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .sp-store-tile {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 10px 6px 12px; cursor: pointer; border-radius: 12px;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sp-store-tile:active { background: #f0f4f0; }
+    .sp-store-tile.selected .sp-logo-box { border-color: #43b02a; box-shadow: 0 0 0 2px #43b02a; }
+    .sp-store-tile.selected .sp-store-name { color: #1a4d1f; }
+
+    .sp-logo-box {
+      width: 68px; height: 68px; border-radius: 16px; background: #fff;
+      border: 1.5px solid #e8e8e8; display: flex; align-items: center; justify-content: center;
+      overflow: hidden; margin-bottom: 7px; transition: border-color 0.15s, box-shadow 0.15s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+    .sp-logo-box .chain-initial {
+      font-size: 26px; font-weight: 900; letter-spacing: -1px;
+    }
+    .sp-store-name { font-size: 11px; font-weight: 700; text-align: center; color: #1a1a1a; line-height: 1.3; }
+    .sp-store-town { font-size: 10px; color: #888; font-weight: 500; text-align: center; margin-top: 1px; }
+
+    /* Chain brand colors for initials */
+    .chain-walmart  { color: #0071CE; }
+    .chain-publix   { color: #007749; }
+    .chain-aldi     { color: #00529B; }
+    .chain-target   { color: #CC0000; }
+
+    /* Chain logo backgrounds */
+    .bg-walmart  { background: #e8f4ff; }
+    .bg-publix   { background: #e6f4ee; }
+    .bg-aldi     { background: #e6eef9; }
+    .bg-target   { background: #fde8e8; }
+
+    /* CTA button */
+    .sp-cta-wrap { padding: 16px 16px 0; }
+    .sp-cta-btn {
+      width: 100%; padding: 15px; border-radius: 28px; border: none;
+      background: #43b02a; color: #fff; font-size: 16px; font-weight: 800;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 14px rgba(67,176,42,0.35);
+      transition: background 0.15s;
+    }
+    .sp-cta-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+    .sp-cta-btn:not(:disabled):active { background: #37941f; }
+    .sp-sel-count { font-size: 13px; font-weight: 600; opacity: 0.85; }
+
+    /* Select all row */
+    .sp-select-all-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 16px 2px; }
+    .sp-select-all-btn { font-size: 12px; font-weight: 700; color: #43b02a; background: none; border: none; cursor: pointer; padding: 4px 0; }
+
+    /* Loading spinner */
+    .sp-loading { text-align: center; padding: 40px 20px; color: #888; font-size: 14px; }
+    .spinner { width: 36px; height: 36px; border: 4px solid #e0e0e0; border-top-color: #43b02a; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===================== MAIN APP PAGE ===================== */
     .main-wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }
     .layout { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
     @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+    /* Back button */
+    .back-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .back-btn { background: #fff; border: 1.5px solid #e0e0e0; border-radius: 22px; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; color: #555; display: flex; align-items: center; gap: 6px; }
+    .back-btn:hover { border-color: #43b02a; color: #1a4d1f; }
+    .back-store-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .back-store-chip { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; color: #fff; }
 
     /* FILTER BAR */
     .filter-bar { background: #fff; border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .filter-label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
-    .town-pill { padding: 5px 12px; border-radius: 20px; border: 1.5px solid #e0e0e0; background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: #555; transition: all 0.2s; }
-    .town-pill.active { background: #1a4d1f; color: #fff; border-color: #1a4d1f; }
     .search-input { flex: 1; min-width: 180px; padding: 8px 12px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 14px; outline: none; }
     .search-input:focus { border-color: #43b02a; }
     .cat-select { padding: 8px 12px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 13px; background: #fff; outline: none; cursor: pointer; }
@@ -111,8 +200,6 @@
 
     /* LOADING */
     .loading { text-align: center; padding: 60px 20px; color: #888; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top-color: #43b02a; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -121,77 +208,119 @@
 <nav class="topnav">
   <img class="topnav-logo" src="https://club1054.github.io/cartcompare/logo.png" onerror="this.style.display='none'" alt="CartCompare"/>
   <div class="topnav-brand"><span>Cart</span>Compare</div>
-  <div class="nav-right">
-    <div class="brand-toggle">
-      <button class="brand-btn active" id="btnName" onclick="setBrand('name')">Name Brand</button>
-      <button class="brand-btn" id="btnStore" onclick="setBrand('store')">Store Brand</button>
-    </div>
-    <button class="cart-btn" onclick="scrollToCart()">
-      🛒 Cart <span class="cart-badge" id="cartCount">0</span>
-    </button>
+  <div class="nav-right" id="navRight">
+    <!-- populated after store selection -->
   </div>
 </nav>
 
-<div class="main-wrap">
-  <!-- STATS BAR -->
-  <div class="stats-bar">
-    <div class="stat-chip"><div class="stat-num" id="statProducts">—</div><div class="stat-label">Products</div></div>
-    <div class="stat-chip"><div class="stat-num" id="statStores">—</div><div class="stat-label">Stores</div></div>
-    <div class="stat-chip"><div class="stat-num" id="statSavings">—</div><div class="stat-label">Max Savings</div></div>
-    <div class="stat-chip"><div class="stat-num" id="statCart">$0.00</div><div class="stat-label">Cart (Best)</div></div>
-  </div>
+<!-- ==================== STORE SELECTION PAGE ==================== -->
+<div id="storePage">
+  <div class="sp-wrap">
 
-  <!-- FILTER BAR -->
-  <div class="filter-bar">
-    <div class="filter-row" style="margin-bottom:10px;">
-      <span class="filter-label">Town:</span>
-      <button class="town-pill active" onclick="setTown('all',this)">All</button>
-      <button class="town-pill" onclick="setTown('Crystal River',this)">Crystal River</button>
-      <button class="town-pill" onclick="setTown('Hernando',this)">Hernando</button>
-      <button class="town-pill" onclick="setTown('Homosassa',this)">Homosassa</button>
-      <button class="town-pill" onclick="setTown('Inverness',this)">Inverness</button>
-      <button class="town-pill" onclick="setTown('Lecanto',this)">Lecanto</button>
-    </div>
-    <div class="filter-row">
-      <input class="search-input" type="text" placeholder="🔍 Search products..." id="searchBox" oninput="onSearch()"/>
-      <select class="cat-select" id="catSelect" onchange="onSearch()">
-        <option value="">All Categories</option>
-        <option>Beverages</option>
-        <option>Bread & Bakery</option>
-        <option>Breakfast & Cereal</option>
-        <option>Dairy</option>
-        <option>Deli & Prepared</option>
-        <option>Frozen Foods</option>
-        <option>Meat & Seafood</option>
-        <option>Pantry & Dry Goods</option>
-        <option>Personal Care</option>
-        <option>Produce</option>
-        <option>Snacks</option>
-        <option>Household</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="layout">
-    <!-- PRODUCT LIST -->
-    <div>
-      <div id="productGrid" class="product-grid">
-        <div class="loading"><div class="spinner"></div>Loading products & prices…</div>
+    <!-- Search bar -->
+    <div class="sp-hero">
+      <div class="sp-location"><span class="sp-location-pin">📍</span> Citrus County, Florida</div>
+      <div class="sp-search-wrap">
+        <span class="sp-search-icon">🔍</span>
+        <input class="sp-search" id="spSearch" type="text" placeholder="Search stores..." oninput="filterStoreTiles()"/>
       </div>
-      <div class="pagination" id="pagination"></div>
     </div>
 
-    <!-- CART PANEL -->
-    <div class="cart-panel" id="cartPanel">
-      <div class="cp-header">
-        <div class="cp-title">🛒 My Cart</div>
-        <div class="cp-sub" id="cpSub">Add items to compare store totals</div>
+    <!-- Town filter -->
+    <div class="sp-towns" id="spTowns">
+      <button class="sp-town-pill active" onclick="setSpTown('all',this)">All Towns</button>
+      <button class="sp-town-pill" onclick="setSpTown('Crystal River',this)">Crystal River</button>
+      <button class="sp-town-pill" onclick="setSpTown('Hernando',this)">Hernando</button>
+      <button class="sp-town-pill" onclick="setSpTown('Homosassa',this)">Homosassa</button>
+      <button class="sp-town-pill" onclick="setSpTown('Inverness',this)">Inverness</button>
+      <button class="sp-town-pill" onclick="setSpTown('Lecanto',this)">Lecanto</button>
+    </div>
+
+    <!-- Store grid -->
+    <div class="sp-section">Choose your stores</div>
+    <div class="sp-select-all-row">
+      <span style="font-size:12px;color:#888" id="spSelLabel">Tap stores to select</span>
+      <button class="sp-select-all-btn" id="spSelAllBtn" onclick="toggleSelectAll()">Select All</button>
+    </div>
+
+    <div id="spLoading" class="sp-loading"><div class="spinner"></div>Loading stores…</div>
+    <div id="spGrid" class="sp-grid" style="display:none"></div>
+
+    <!-- CTA -->
+    <div class="sp-cta-wrap">
+      <button class="sp-cta-btn" id="spCtaBtn" onclick="goToMain()" disabled>
+        🛒 Compare Prices <span class="sp-sel-count" id="spSelCount"></span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== MAIN APP PAGE ==================== -->
+<div id="mainPage">
+  <div class="main-wrap">
+
+    <!-- Back bar -->
+    <div class="back-bar">
+      <button class="back-btn" onclick="goBack()">← Change Stores</button>
+      <div class="back-store-chips" id="backStoreChips"></div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+      <div class="stat-chip"><div class="stat-num" id="statProducts">—</div><div class="stat-label">Products</div></div>
+      <div class="stat-chip"><div class="stat-num" id="statStores">—</div><div class="stat-label">Stores</div></div>
+      <div class="stat-chip"><div class="stat-num" id="statSavings">—</div><div class="stat-label">Max Savings</div></div>
+      <div class="stat-chip"><div class="stat-num" id="statCart">$0.00</div><div class="stat-label">Cart (Best)</div></div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <div class="filter-row">
+        <input class="search-input" type="text" placeholder="🔍 Search products..." id="searchBox" oninput="onSearch()"/>
+        <select class="cat-select" id="catSelect" onchange="onSearch()">
+          <option value="">All Categories</option>
+          <option>Beverages</option>
+          <option>Bread & Bakery</option>
+          <option>Breakfast & Cereal</option>
+          <option>Dairy</option>
+          <option>Deli & Prepared</option>
+          <option>Frozen Foods</option>
+          <option>Meat & Seafood</option>
+          <option>Pantry & Dry Goods</option>
+          <option>Personal Care</option>
+          <option>Produce</option>
+          <option>Snacks</option>
+          <option>Household</option>
+        </select>
+        <div class="brand-toggle">
+          <button class="brand-btn active" id="btnName" onclick="setBrand('name')">Name Brand</button>
+          <button class="brand-btn" id="btnStore" onclick="setBrand('store')">Store Brand</button>
+        </div>
       </div>
-      <div class="cp-body" id="cartBody">
-        <div class="cp-empty">
-          <div class="cp-empty-icon">🛒</div>
-          <div>Your cart is empty</div>
-          <div style="margin-top:6px;font-size:12px;color:#bbb">Tap + on any product to add it</div>
+    </div>
+
+    <div class="layout">
+      <!-- PRODUCT LIST -->
+      <div>
+        <div id="productGrid" class="product-grid">
+          <div class="loading"><div class="spinner"></div>Loading products & prices…</div>
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+
+      <!-- CART PANEL -->
+      <div class="cart-panel" id="cartPanel">
+        <div class="cp-header">
+          <div class="cp-title">🛒 My Cart</div>
+          <div class="cp-sub" id="cpSub">Add items to compare store totals</div>
+        </div>
+        <div class="cp-body" id="cartBody">
+          <div class="cp-empty">
+            <div class="cp-empty-icon">🛒</div>
+            <div>Your cart is empty</div>
+            <div style="margin-top:6px;font-size:12px;color:#bbb">Tap + on any product to add it</div>
+          </div>
         </div>
       </div>
     </div>
@@ -203,7 +332,6 @@ const SUPABASE_URL = 'https://kdnkupipubiwchoiuedw.supabase.co/rest/v1';
 const SUPABASE_KEY = 'sb_publishable_w7MlMQ6_6JJNJp_2MGE0mw_bE9TtXkX';
 const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
 
-// Store name overrides for legacy DB entries
 const STORE_OVERRIDES = {
   1: { name: 'Aldi Crystal River', location: 'Crystal River, FL', chain: 'Aldi' },
   2: { name: 'Publix Crystal River', location: 'Crystal River, FL', chain: 'Publix' },
@@ -215,13 +343,22 @@ const CHAIN_COLORS = {
   'Walmart': '#0071CE', 'Publix': '#007749', 'Aldi': '#00529B', 'Target': '#CC0000'
 };
 
+const CHAIN_BG = {
+  'Walmart': '#e8f4ff', 'Publix': '#e6f4ee', 'Aldi': '#e6eef9', 'Target': '#fde8e8'
+};
+
+const CHAIN_INITIALS = {
+  'Walmart': 'W', 'Publix': 'P', 'Aldi': 'A', 'Target': 'T'
+};
+
 let allStores = [], allProducts = [], allPrices = [];
 let filteredProducts = [];
+let selectedStoreIds = new Set();
 let currentBrand = 'name';
-let currentTown = 'all';
 let currentPage = 1;
 const PAGE_SIZE = 15;
-let cart = {}; // { productId: qty }
+let cart = {};
+let spCurrentTown = 'all';
 
 async function api(path) {
   const r = await fetch(SUPABASE_URL + path, { headers: HEADERS });
@@ -231,7 +368,6 @@ async function api(path) {
 function getStore(s) {
   const ov = STORE_OVERRIDES[s.id];
   if (ov) return { ...s, ...ov };
-  // Derive chain from name
   const n = s.name || '';
   let chain = 'Other';
   if (n.toLowerCase().includes('walmart')) chain = 'Walmart';
@@ -251,11 +387,130 @@ function getStoreTown(s) {
   return 'Other';
 }
 
-function getActiveStores() {
-  return allStores.filter(s => {
-    if (currentTown === 'all') return true;
-    return getStoreTown(s) === currentTown;
+// ===================== STORE SELECTION PAGE =====================
+
+function setSpTown(town, el) {
+  spCurrentTown = town;
+  document.querySelectorAll('.sp-town-pill').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderStoreTiles();
+}
+
+function filterStoreTiles() { renderStoreTiles(); }
+
+function renderStoreTiles() {
+  const q = (document.getElementById('spSearch').value || '').toLowerCase();
+  const grid = document.getElementById('spGrid');
+
+  const visible = allStores.filter(s => {
+    const townMatch = spCurrentTown === 'all' || getStoreTown(s) === spCurrentTown;
+    const qMatch = !q || s.name.toLowerCase().includes(q) || (s.location||'').toLowerCase().includes(q);
+    return townMatch && qMatch;
   });
+
+  grid.innerHTML = visible.map(s => {
+    const color = CHAIN_COLORS[s.chain] || '#888';
+    const bg = CHAIN_BG[s.chain] || '#f5f5f5';
+    const initial = CHAIN_INITIALS[s.chain] || s.name[0];
+    const town = getStoreTown(s);
+    const sel = selectedStoreIds.has(s.id);
+    return `
+      <div class="sp-store-tile ${sel ? 'selected' : ''}" onclick="toggleStore(${s.id})" id="tile-${s.id}">
+        <div class="sp-logo-box" style="background:${bg}">
+          <span class="chain-initial" style="color:${color}">${initial}</span>
+        </div>
+        <div class="sp-store-name">${s.name.replace(' Crystal River','').replace(' Homosassa','').replace(' Inverness','').replace(' Hernando','').replace(' Lecanto','')}</div>
+        <div class="sp-store-town">${town}</div>
+      </div>`;
+  }).join('');
+
+  updateSpCta();
+}
+
+function toggleStore(id) {
+  if (selectedStoreIds.has(id)) {
+    selectedStoreIds.delete(id);
+  } else {
+    selectedStoreIds.add(id);
+  }
+  const tile = document.getElementById('tile-' + id);
+  if (tile) tile.classList.toggle('selected', selectedStoreIds.has(id));
+  updateSpCta();
+}
+
+function toggleSelectAll() {
+  const q = (document.getElementById('spSearch').value || '').toLowerCase();
+  const visible = allStores.filter(s => {
+    const townMatch = spCurrentTown === 'all' || getStoreTown(s) === spCurrentTown;
+    const qMatch = !q || s.name.toLowerCase().includes(q) || (s.location||'').toLowerCase().includes(q);
+    return townMatch && qMatch;
+  });
+  const allSel = visible.every(s => selectedStoreIds.has(s.id));
+  if (allSel) {
+    visible.forEach(s => selectedStoreIds.delete(s.id));
+  } else {
+    visible.forEach(s => selectedStoreIds.add(s.id));
+  }
+  renderStoreTiles();
+}
+
+function updateSpCta() {
+  const n = selectedStoreIds.size;
+  const btn = document.getElementById('spCtaBtn');
+  const countEl = document.getElementById('spSelCount');
+  const label = document.getElementById('spSelLabel');
+  const selAllBtn = document.getElementById('spSelAllBtn');
+
+  btn.disabled = n === 0;
+  countEl.textContent = n > 0 ? `(${n} store${n > 1 ? 's' : ''})` : '';
+  label.textContent = n > 0 ? `${n} store${n > 1 ? 's' : ''} selected` : 'Tap stores to select';
+
+  // Update select all button text
+  const q = (document.getElementById('spSearch').value || '').toLowerCase();
+  const visible = allStores.filter(s => {
+    const townMatch = spCurrentTown === 'all' || getStoreTown(s) === spCurrentTown;
+    const qMatch = !q || s.name.toLowerCase().includes(q) || (s.location||'').toLowerCase().includes(q);
+    return townMatch && qMatch;
+  });
+  const allSel = visible.length > 0 && visible.every(s => selectedStoreIds.has(s.id));
+  selAllBtn.textContent = allSel ? 'Deselect All' : 'Select All';
+}
+
+function goToMain() {
+  if (selectedStoreIds.size === 0) return;
+  document.getElementById('storePage').style.display = 'none';
+  document.getElementById('mainPage').style.display = 'block';
+
+  // Update nav right
+  document.getElementById('navRight').innerHTML = `
+    <button class="cart-btn" onclick="scrollToCart()">
+      🛒 Cart <span class="cart-badge" id="cartCount">0</span>
+    </button>`;
+
+  // Show selected store chips in back bar
+  const chips = document.getElementById('backStoreChips');
+  const sel = allStores.filter(s => selectedStoreIds.has(s.id));
+  chips.innerHTML = sel.map(s => {
+    const color = CHAIN_COLORS[s.chain] || '#888';
+    return `<span class="back-store-chip" style="background:${color}">${s.name.split(' ')[0]}</span>`;
+  }).join('');
+
+  // Update stats
+  document.getElementById('statStores').textContent = selectedStoreIds.size;
+  updateStats();
+  renderProducts();
+}
+
+function goBack() {
+  document.getElementById('mainPage').style.display = 'none';
+  document.getElementById('storePage').style.display = 'block';
+  document.getElementById('navRight').innerHTML = '';
+}
+
+// ===================== MAIN APP LOGIC =====================
+
+function getActiveStores() {
+  return allStores.filter(s => selectedStoreIds.has(s.id));
 }
 
 async function loadData() {
@@ -268,21 +523,20 @@ async function loadData() {
   allProducts = products;
   allPrices = prices;
   filteredProducts = [...allProducts];
-  updateStats();
-  renderProducts();
+
+  // Show store grid
+  document.getElementById('spLoading').style.display = 'none';
+  document.getElementById('spGrid').style.display = 'grid';
+  renderStoreTiles();
 }
 
 function updateStats() {
   document.getElementById('statProducts').textContent = allProducts.length;
-  document.getElementById('statStores').textContent = allStores.length;
-  // Calculate max potential savings
   let totalSavings = 0;
   allProducts.forEach(p => {
-    const pricesForP = allPrices.filter(pr => pr.product_id === p.id);
+    const pricesForP = allPrices.filter(pr => pr.product_id === p.id && selectedStoreIds.has(pr.store_id));
     const vals = pricesForP.map(pr => currentBrand === 'name' ? pr.name_brand_price : pr.store_brand_price).filter(v => v > 0);
-    if (vals.length >= 2) {
-      totalSavings += Math.max(...vals) - Math.min(...vals);
-    }
+    if (vals.length >= 2) totalSavings += Math.max(...vals) - Math.min(...vals);
   });
   document.getElementById('statSavings').textContent = '$' + totalSavings.toFixed(0);
 }
@@ -296,13 +550,6 @@ function onSearch() {
     return matchQ && matchCat;
   });
   currentPage = 1;
-  renderProducts();
-}
-
-function setTown(town, el) {
-  currentTown = town;
-  document.querySelectorAll('.town-pill').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
   renderProducts();
 }
 
@@ -336,7 +583,6 @@ function renderProducts() {
   }
 
   grid.innerHTML = pageProducts.map(p => {
-    // Get prices for active stores only
     const storePrices = activeStores.map(s => {
       const pd = getPriceForStore(p.id, s.id);
       if (!pd) return null;
@@ -345,9 +591,8 @@ function renderProducts() {
 
     if (storePrices.length === 0) return '';
 
-    const best = storePrices[0];
     const worst = storePrices[storePrices.length - 1];
-    const savings = (worst.price - best.price).toFixed(2);
+    const savings = (worst.price - storePrices[0].price).toFixed(2);
     const qty = cart[p.id] || 0;
 
     const priceRows = storePrices.map((sp, i) => {
@@ -377,7 +622,7 @@ function renderProducts() {
             <div class="pc-name">${p.name}</div>
             <div class="pc-meta">${p.size || ''} ${p.name_brand ? '• ' + p.name_brand : ''}</div>
           </div>
-          ${qty > 0 
+          ${qty > 0
             ? `<div class="qty-ctrl" style="margin-left:auto">
                 <button class="qty-btn" onclick="changeQty(${p.id},-1)">−</button>
                 <span class="qty-num">${qty}</span>
@@ -428,20 +673,12 @@ function changeQty(productId, delta) {
   if (cart[productId] === 0) delete cart[productId];
   updateCartCount();
   renderCart();
-  // Re-render just this product card
   const p = allProducts.find(x => x.id === productId);
   if (p) {
-    const activeStores = getActiveStores();
-    const storePrices = activeStores.map(s => {
-      const pd = getPriceForStore(p.id, s.id);
-      if (!pd) return null;
-      return { store: s, ...pd };
-    }).filter(Boolean).sort((a, b) => a.price - b.price);
     const qty = cart[productId] || 0;
     const el = document.getElementById(`pc-${productId}`);
     if (el) {
       const header = el.querySelector('.pc-header');
-      // Update just the add/qty control
       const existing = header.querySelector('.qty-ctrl, .pc-add-btn');
       if (existing) existing.remove();
       const ctrl = document.createElement('div');
@@ -462,7 +699,8 @@ function changeQty(productId, delta) {
 
 function updateCartCount() {
   const total = Object.values(cart).reduce((a, b) => a + b, 0);
-  document.getElementById('cartCount').textContent = total;
+  const el = document.getElementById('cartCount');
+  if (el) el.textContent = total;
 }
 
 function renderCart() {
@@ -476,7 +714,6 @@ function renderCart() {
     return;
   }
 
-  // Build cart items HTML
   let itemsHtml = cartIds.map(id => {
     const p = allProducts.find(x => x.id === id);
     if (!p) return '';
@@ -496,7 +733,6 @@ function renderCart() {
       </div>`;
   }).join('');
 
-  // Calculate per-store totals
   const activeStores = getActiveStores();
   const storeTotals = activeStores.map(s => {
     let total = 0;
