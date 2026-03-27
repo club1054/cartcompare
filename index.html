@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CartCompare V3 — Citrus County Grocery Price Comparison</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --green: #2e7d32; --green-light: #4caf50; --green-bg: #e8f5e9;
+      --red: #c62828; --gray: #757575; --gray-light: #f5f5f5;
+      --border: #e0e0e0; --shadow: 0 2px 8px rgba(0,0,0,0.08); --radius: 10px;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4f0; color: #1a1a1a; min-height: 100vh; }
+
+    /* HEADER */
+    header { background: linear-gradient(135deg, var(--green) 0%, #1b5e20 100%); color: #fff; padding: 0 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 100; }
+    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 12px; }
+    .logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; }
+    .logo span { color: #a5d6a7; }
+    .header-tagline { font-size: 13px; opacity: 0.85; }
+    @media(max-width:500px){ .header-tagline { display: none; } }
+
+    /* STORE BAR */
+    .store-bar { background: #fff; border-bottom: 2px solid var(--border); padding: 10px 20px; position: sticky; top: 60px; z-index: 90; }
+    .store-bar-inner { max-width: 1200px; margin: 0 auto; }
+    .store-bar-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
+    .store-bar-label { font-size: 12px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+    .town-filter { display: flex; gap: 6px; flex-wrap: wrap; }
+    .town-btn { padding: 3px 10px; border-radius: 12px; border: 1.5px solid var(--border); background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--gray); transition: all 0.15s; }
+    .town-btn:hover { border-color: var(--green-light); color: var(--green); }
+    .town-btn.active { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+    .store-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .store-chip { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; border: 2px solid var(--border); background: #fff; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; user-select: none; white-space: nowrap; }
+    .store-chip:hover { border-color: var(--green-light); background: var(--green-bg); }
+    .store-chip.active { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+    .chain-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-walmart { background: #0071ce; } .dot-publix { background: #007a3d; }
+    .dot-aldi { background: #00539b; } .dot-target { background: #cc0000; }
+
+    /* TABS */
+    .tabs-bar { background: #fff; border-bottom: 2px solid var(--border); padding: 0 20px; }
+    .tabs-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 0; }
+    .tab-btn { padding: 12px 20px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--gray); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
+    .tab-btn:hover { color: var(--green); }
+    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+
+    /* CONTROLS BAR */
+    .controls-bar { background: #fff; border-bottom: 1px solid var(--border); padding: 10px 20px; }
+    .controls-inner { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .search-box { flex: 1; min-width: 200px; padding: 8px 14px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; }
+    .search-box:focus { border-color: var(--green-light); }
+    .category-select { padding: 8px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; background: #fff; cursor: pointer; outline: none; }
+    .category-select:focus { border-color: var(--green-light); }
+    .brand-toggle { display: flex; border: 2px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .brand-toggle button { padding: 7px 14px; border: none; background: #fff; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--gray); transition: all 0.15s; }
+    .brand-toggle button.active { background: var(--green); color: #fff; }
+    .results-count { font-size: 13px; color: var(--gray); margin-left: auto; }
+
+    /* MAIN */
+    main { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* STATE BOX */
+    .state-box { text-align: center; padding: 60px 20px; color: var(--gray); }
+    .state-box .icon { font-size: 48px; margin-bottom: 12px; }
+    .state-box h3 { font-size: 18px; margin-bottom: 6px; color: #444; }
+    .state-box p { font-size: 14px; }
+
+    /* PRODUCT GRID */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .product-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; transition: transform 0.15s, box-shadow 0.15s; }
+    .product-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+    .card-header { padding: 14px 14px 10px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; }
+    .card-img-placeholder { width: 52px; height: 52px; border-radius: 6px; background: var(--gray-light); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .card-title-area { flex: 1; min-width: 0; }
+    .card-category { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray); font-weight: 600; }
+    .card-name { font-size: 14px; font-weight: 700; line-height: 1.3; margin-top: 2px; }
+    .card-size { font-size: 12px; color: var(--gray); margin-top: 2px; }
+    .card-prices { padding: 10px 14px; }
+    .price-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f0f0f0; }
+    .price-row:last-child { border-bottom: none; }
+    .price-store { display: flex; align-items: center; gap: 6px; }
+    .price-store-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .price-store-name { font-size: 12px; font-weight: 600; color: #444; }
+    .price-store-loc { font-size: 11px; color: var(--gray); }
+    .price-value { display: flex; align-items: center; gap: 6px; }
+    .price-amount { font-size: 16px; font-weight: 800; color: #1a1a1a; }
+    .price-amount.best { color: var(--green); }
+    .sale-badge { background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; }
+    .savings-bar { margin-top: 10px; padding: 8px 10px; background: var(--green-bg); border-radius: 6px; display: flex; align-items: center; justify-content: space-between; }
+    .savings-label { font-size: 11px; color: var(--green); font-weight: 600; }
+    .savings-amount { font-size: 13px; font-weight: 800; color: var(--green); }
+
+    /* SUMMARY BANNER */
+    .summary-banner { background: linear-gradient(135deg, var(--green) 0%, #1b5e20 100%); color: #fff; border-radius: var(--radius); padding: 16px 20px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+    .summary-stat { text-align: center; }
+    .summary-stat .num { font-size: 28px; font-weight: 800; }
+    .summary-stat .lbl { font-size: 11px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; }
+    .summary-divider { width: 1px; background: rgba(255,255,255,0.3); height: 40px; }
+
+    /* BEST STORE VIEW */
+    .best-store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .chain-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .chain-card-header { padding: 16px; display: flex; align-items: center; gap: 12px; }
+    .chain-logo { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: #fff; flex-shrink: 0; }
+    .chain-card-title { font-size: 17px; font-weight: 800; }
+    .chain-card-sub { font-size: 12px; color: var(--gray); margin-top: 2px; }
+    .chain-stats { padding: 0 16px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .chain-stat { background: var(--gray-light); border-radius: 8px; padding: 10px; text-align: center; }
+    .chain-stat .cs-num { font-size: 20px; font-weight: 800; color: var(--green); }
+    .chain-stat .cs-lbl { font-size: 11px; color: var(--gray); margin-top: 2px; }
+    .chain-wins-bar { height: 6px; background: var(--border); border-radius: 3px; margin: 0 16px 16px; overflow: hidden; }
+    .chain-wins-fill { height: 100%; border-radius: 3px; background: var(--green-light); transition: width 0.5s; }
+    .best-store-note { font-size: 13px; color: var(--gray); text-align: center; margin-top: 8px; }
+
+    /* PAGINATION */
+    .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; flex-wrap: wrap; }
+    .page-btn { padding: 7px 13px; border: 2px solid var(--border); border-radius: 6px; background: #fff; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
+    .page-btn:hover { border-color: var(--green-light); background: var(--green-bg); }
+    .page-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+    .page-btn:disabled { opacity: 0.4; cursor: default; }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 20px; font-size: 12px; color: var(--gray); border-top: 1px solid var(--border); margin-top: 40px; background: #fff; }
+
+    /* SPINNER */
+    .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media(max-width:480px) {
+      .product-grid { grid-template-columns: 1fr; }
+      .controls-inner { flex-direction: column; align-items: stretch; }
+      .results-count { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">Cart<span>Compare</span></div>
+    <div class="header-tagline">Citrus County Grocery Price Comparison</div>
+    <div style="font-size:12px;opacity:0.7;">Beta v3.0</div>
+  </div>
+</header>
+
+<!-- Store Selector -->
+<div class="store-bar">
+  <div class="store-bar-inner">
+    <div class="store-bar-top">
+      <div class="store-bar-label">Select stores to compare</div>
+      <div class="town-filter" id="townFilter"></div>
+    </div>
+    <div class="store-chips" id="storeChips">
+      <div style="color:#888;font-size:13px;">Loading stores...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs-bar">
+  <div class="tabs-inner">
+    <button class="tab-btn active" onclick="switchTab('prices')">🛒 Price Comparison</button>
+    <button class="tab-btn" onclick="switchTab('best')">🏆 Best Store</button>
+  </div>
+</div>
+
+<!-- Controls (only for prices tab) -->
+<div class="controls-bar" id="controlsBar">
+  <div class="controls-inner">
+    <input type="text" class="search-box" id="searchBox" placeholder="🔍  Search products..." oninput="onSearch()"/>
+    <select class="category-select" id="categorySelect" onchange="onCategoryChange()">
+      <option value="">All Categories</option>
+    </select>
+    <div class="brand-toggle">
+      <button id="btnNameBrand" class="active" onclick="setBrandMode('name')">Name Brand</button>
+      <button id="btnStoreBrand" onclick="setBrandMode('store')">Store Brand</button>
+    </div>
+    <div class="results-count" id="resultsCount"></div>
+  </div>
+</div>
+
+<main>
+  <!-- Prices Tab -->
+  <div id="tab-prices" class="tab-panel active">
+    <div id="summaryBanner"></div>
+    <div id="productGrid">
+      <div class="state-box">
+        <div class="spinner"></div>
+        <h3>Loading CartCompare V3...</h3>
+        <p>Fetching prices from Citrus County stores</p>
+      </div>
+    </div>
+    <div id="pagination"></div>
+  </div>
+
+  <!-- Best Store Tab -->
+  <div id="tab-best" class="tab-panel">
+    <div id="bestStoreContent">
+      <div class="state-box"><div class="spinner"></div><h3>Calculating...</h3></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <strong>CartCompare V3</strong> &mdash; Citrus County, Florida &mdash; Beta &mdash;
+  Prices are seeded estimates. Always verify at store. &copy; 2026 CartCompare
+</footer>
+
+<script>
+// ===== CONFIG =====
+const SUPABASE_URL = 'https://kdnkupipubiwchoiuedw.supabase.co/rest/v1';
+const SUPABASE_KEY = 'sb_publishable_w7MlMQ6_6JJNJp_2MGE0mw_bE9TtXkX';
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
+
+// ===== STORE NAME OVERRIDES (for legacy IDs 1-4 with generic names in DB) =====
+const STORE_OVERRIDES = {
+  1: { name: 'Walmart Supercenter Lecanto',   location: 'Lecanto, FL',      address: '1936 N Lecanto Hwy, Lecanto, FL 34461' },
+  2: { name: 'Walmart Supercenter Inverness', location: 'Inverness, FL',    address: '2461 E Gulf To Lake Hwy, Inverness, FL 34453' },
+  3: { name: 'Publix Crystal River',          location: 'Crystal River, FL',address: '6760 W Gulf To Lake Hwy, Crystal River, FL 34429' },
+  4: { name: 'Publix Citrus Hills',           location: 'Hernando, FL',     address: '2685 N Forest Ridge Blvd, Hernando, FL 34442' },
+};
+
+// ===== STATE =====
+let allStores = [];
+let allProducts = [];
+let allPrices = [];
+let selectedStoreIds = new Set();
+let brandMode = 'name';
+let searchQuery = '';
+let selectedCategory = '';
+let selectedTown = '';
+let currentPage = 1;
+let currentTab = 'prices';
+const PAGE_SIZE = 24;
+
+const CHAIN_DOT_CLASS = { 'Walmart':'dot-walmart','Publix':'dot-publix','Aldi':'dot-aldi','Target':'dot-target' };
+const CHAIN_COLORS    = { 'Walmart':'#0071ce','Publix':'#007a3d','Aldi':'#00539b','Target':'#cc0000' };
+const CHAIN_EMOJI     = { 'Walmart':'🔵','Publix':'🟢','Aldi':'🔷','Target':'🔴' };
+const CATEGORY_EMOJIS = {
+  'Dairy':'🥛','Produce':'🥦','Meat & Seafood':'🥩','Bakery':'🍞','Frozen':'🧊',
+  'Beverages':'🥤','Snacks':'🍿','Pantry':'🫙','Breakfast':'🥞','Condiments':'🧴',
+  'Personal Care':'🧴','Household':'🧹','Baby':'👶','Pet':'🐾','Deli':'🥪',
+};
+
+// ===== HELPERS =====
+async function query(path) {
+  const r = await fetch(SUPABASE_URL + path, { headers: HEADERS });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function applyOverrides(store) {
+  if (STORE_OVERRIDES[store.id]) return { ...store, ...STORE_OVERRIDES[store.id] };
+  return store;
+}
+
+function getChainFromStore(store) {
+  const n = store.name.toLowerCase();
+  if (n.includes('walmart')) return 'Walmart';
+  if (n.includes('publix'))  return 'Publix';
+  if (n.includes('aldi'))    return 'Aldi';
+  if (n.includes('target'))  return 'Target';
+  return 'Other';
+}
+
+function getDisplayPrice(rec) {
+  if (!rec) return null;
+  if (brandMode === 'name') {
+    if (rec.on_sale && rec.sale_price) return { price: rec.sale_price, onSale: true };
+    return rec.name_brand_price ? { price: rec.name_brand_price, onSale: false } : null;
+  }
+  return rec.store_brand_price ? { price: rec.store_brand_price, onSale: false } : null;
+}
+
+function getPriceForStore(productId, storeId) {
+  return allPrices.find(p => p.product_id === productId && p.store_id === storeId) || null;
+}
+
+// ===== INIT =====
+async function init() {
+  try {
+    const [rawStores, products, prices] = await Promise.all([
+      query('/v3_stores?select=*&active=eq.true&order=id'),
+      query('/v3_products?select=*&order=category,name&limit=200'),
+      query('/v3_prices?select=*&limit=2000'),
+    ]);
+
+    // Apply name overrides for legacy stores
+    allStores = rawStores.map(applyOverrides);
+    allProducts = products;
+    allPrices = prices;
+
+    allStores.forEach(s => selectedStoreIds.add(s.id));
+
+    renderTownFilter();
+    renderStoreChips();
+    populateCategoryDropdown();
+    renderAll();
+  } catch (e) {
+    document.getElementById('productGrid').innerHTML = `<div class="state-box"><div class="icon">⚠️</div><h3>Failed to load</h3><p>${e.message}</p></div>`;
+  }
+}
+
+// ===== TABS =====
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('controlsBar').style.display = tab === 'prices' ? 'block' : 'none';
+  if (tab === 'best') renderBestStore();
+}
+
+// ===== TOWN FILTER =====
+function getTowns() {
+  const towns = [...new Set(allStores.map(s => s.location))].sort();
+  return towns;
+}
+
+function renderTownFilter() {
+  const el = document.getElementById('townFilter');
+  const towns = getTowns();
+  el.innerHTML = `<button class="town-btn active" onclick="setTown('')">All Towns</button>` +
+    towns.map(t => `<button class="town-btn" onclick="setTown('${t}')">${t.replace(', FL','')}</button>`).join('');
+}
+
+function setTown(town) {
+  selectedTown = town;
+  document.querySelectorAll('.town-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === (town ? town.replace(', FL','') : 'All Towns'));
+  });
+  // Update selected store IDs to match town
+  if (town) {
+    const townStores = allStores.filter(s => s.location === town);
+    selectedStoreIds = new Set(townStores.map(s => s.id));
+  } else {
+    selectedStoreIds = new Set(allStores.map(s => s.id));
+  }
+  renderStoreChips();
+  currentPage = 1;
+  renderAll();
+  if (currentTab === 'best') renderBestStore();
+}
+
+// ===== STORE CHIPS =====
+function renderStoreChips() {
+  const el = document.getElementById('storeChips');
+  const visible = selectedTown ? allStores.filter(s => s.location === selectedTown) : allStores;
+  el.innerHTML = visible.map(store => {
+    const chain = getChainFromStore(store);
+    const active = selectedStoreIds.has(store.id) ? 'active' : '';
+    const dotClass = CHAIN_DOT_CLASS[chain] || 'dot-walmart';
+    return `<div class="store-chip ${active}" onclick="toggleStore(${store.id})" title="${store.address}">
+      <span class="chain-dot ${dotClass}"></span>
+      <span>${store.name}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleStore(storeId) {
+  if (selectedStoreIds.has(storeId)) {
+    if (selectedStoreIds.size > 1) selectedStoreIds.delete(storeId);
+  } else {
+    selectedStoreIds.add(storeId);
+  }
+  renderStoreChips();
+  currentPage = 1;
+  renderAll();
+  if (currentTab === 'best') renderBestStore();
+}
+
+// ===== CATEGORY =====
+function populateCategoryDropdown() {
+  const cats = [...new Set(allProducts.map(p => p.category))].sort();
+  const sel = document.getElementById('categorySelect');
+  cats.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = (CATEGORY_EMOJIS[c] || '') + ' ' + c;
+    sel.appendChild(opt);
+  });
+}
+
+// ===== BRAND / SEARCH / FILTER =====
+function setBrandMode(mode) {
+  brandMode = mode;
+  document.getElementById('btnNameBrand').classList.toggle('active', mode === 'name');
+  document.getElementById('btnStoreBrand').classList.toggle('active', mode === 'store');
+  currentPage = 1;
+  renderAll();
+}
+function onSearch() { searchQuery = document.getElementById('searchBox').value.toLowerCase().trim(); currentPage = 1; renderAll(); }
+function onCategoryChange() { selectedCategory = document.getElementById('categorySelect').value; currentPage = 1; renderAll(); }
+
+function getFilteredProducts() {
+  return allProducts.filter(p => {
+    if (selectedCategory && p.category !== selectedCategory) return false;
+    if (searchQuery) {
+      const hay = [p.name, p.category, p.name_brand, p.store_brand].join(' ').toLowerCase();
+      if (!hay.includes(searchQuery)) return false;
+    }
+    return true;
+  });
+}
+
+// ===== RENDER ALL =====
+function renderAll() {
+  const filtered = getFilteredProducts();
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  currentPage = Math.min(currentPage, Math.max(1, totalPages));
+  const pageProducts = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  document.getElementById('resultsCount').textContent =
+    total + ' product' + (total !== 1 ? 's' : '') + (selectedCategory ? ' in ' + selectedCategory : '');
+
+  renderSummary(filtered);
+  renderGrid(pageProducts);
+  renderPagination(totalPages);
+}
+
+function renderSummary(products) {
+  const el = document.getElementById('summaryBanner');
+  if (!products.length) { el.innerHTML = ''; return; }
+  let totalSavings = 0, productsWithSavings = 0;
+  products.forEach(p => {
+    const prices = [...selectedStoreIds].map(sid => { const dp = getDisplayPrice(getPriceForStore(p.id, sid)); return dp ? dp.price : null; }).filter(x => x !== null);
+    if (prices.length >= 2) { const s = Math.max(...prices) - Math.min(...prices); if (s > 0) { totalSavings += s; productsWithSavings++; } }
+  });
+  el.innerHTML = `<div class="summary-banner">
+    <div class="summary-stat"><div class="num">${products.length}</div><div class="lbl">Products</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat"><div class="num">${selectedStoreIds.size}</div><div class="lbl">Stores</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat"><div class="num">$${totalSavings.toFixed(2)}</div><div class="lbl">Potential Savings</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat"><div class="num">${productsWithSavings}</div><div class="lbl">Items w/ Price Diff</div></div>
+  </div>`;
+}
+
+function renderGrid(products) {
+  const el = document.getElementById('productGrid');
+  if (!products.length) { el.innerHTML = `<div class="state-box"><div class="icon">🔍</div><h3>No products found</h3><p>Try a different search or category</p></div>`; return; }
+  el.innerHTML = `<div class="product-grid">${products.map(p => renderCard(p)).join('')}</div>`;
+}
+
+function renderCard(product) {
+  const selectedStores = allStores.filter(s => selectedStoreIds.has(s.id));
+  const storePrices = selectedStores.map(store => {
+    const rec = getPriceForStore(product.id, store.id);
+    const dp = getDisplayPrice(rec);
+    return { store, chain: getChainFromStore(store), price: dp ? dp.price : null, onSale: dp ? dp.onSale : false };
+  }).filter(sp => sp.price !== null).sort((a, b) => a.price - b.price);
+
+  if (!storePrices.length) return `<div class="product-card"><div class="card-header"><div class="card-img-placeholder">${CATEGORY_EMOJIS[product.category]||'🛒'}</div><div class="card-title-area"><div class="card-category">${product.category}</div><div class="card-name">${product.name}</div></div></div><div class="card-prices" style="color:#999;font-size:13px;padding:14px;">No prices for selected stores</div></div>`;
+
+  const savings = storePrices[storePrices.length-1].price - storePrices[0].price;
+  const brandLabel = brandMode === 'name' ? (product.name_brand || 'Name Brand') : (product.store_brand || 'Store Brand');
+
+  const priceRows = storePrices.map((sp, i) => `
+    <div class="price-row">
+      <div class="price-store">
+        <span class="price-store-dot ${CHAIN_DOT_CLASS[sp.chain]||'dot-walmart'}"></span>
+        <div>
+          <div class="price-store-name">${sp.store.name}</div>
+          ${sp.store.location ? `<div class="price-store-loc">${sp.store.location}</div>` : ''}
+        </div>
+      </div>
+      <div class="price-value">
+        ${sp.onSale ? '<span class="sale-badge">SALE</span>' : ''}
+        <span class="price-amount ${i===0?'best':''}">$${sp.price.toFixed(2)}</span>
+      </div>
+    </div>`).join('');
+
+  const savingsBar = savings > 0.01 ? `<div class="savings-bar"><span class="savings-label">💰 Best vs. Most Expensive</span><span class="savings-amount">Save $${savings.toFixed(2)}</span></div>` : '';
+
+  return `<div class="product-card">
+    <div class="card-header">
+      <div class="card-img-placeholder">${CATEGORY_EMOJIS[product.category]||'🛒'}</div>
+      <div class="card-title-area">
+        <div class="card-category">${product.category}</div>
+        <div class="card-name">${product.name}</div>
+        <div class="card-size">${product.size||''} &bull; <em>${brandLabel}</em></div>
+      </div>
+    </div>
+    <div class="card-prices">${priceRows}${savingsBar}</div>
+  </div>`;
+}
+
+// ===== BEST STORE VIEW =====
+function renderBestStore() {
+  const el = document.getElementById('bestStoreContent');
+  const selectedStores = allStores.filter(s => selectedStoreIds.has(s.id));
+  if (selectedStores.length < 2) {
+    el.innerHTML = `<div class="state-box"><div class="icon">ℹ️</div><h3>Select at least 2 stores</h3><p>Toggle stores above to compare them</p></div>`;
+    return;
+  }
+
+  // Count wins per chain (cheapest on each product)
+  const chainWins = {};
+  const chainTotals = {};
+  const chainCounts = {};
+  const chains = [...new Set(selectedStores.map(getChainFromStore))];
+  chains.forEach(c => { chainWins[c] = 0; chainTotals[c] = 0; chainCounts[c] = 0; });
+
+  allProducts.forEach(product => {
+    // Group prices by chain (use best price per chain)
+    const chainBest = {};
+    selectedStores.forEach(store => {
+      const chain = getChainFromStore(store);
+      const dp = getDisplayPrice(getPriceForStore(product.id, store.id));
+      if (dp) {
+        if (!chainBest[chain] || dp.price < chainBest[chain]) chainBest[chain] = dp.price;
+      }
+    });
+    const availChains = Object.keys(chainBest);
+    if (availChains.length < 2) return;
+    const minPrice = Math.min(...Object.values(chainBest));
+    availChains.forEach(c => {
+      chainTotals[c] = (chainTotals[c] || 0) + chainBest[c];
+      chainCounts[c] = (chainCounts[c] || 0) + 1;
+      if (chainBest[c] === minPrice) chainWins[c] = (chainWins[c] || 0) + 1;
+    });
+  });
+
+  const maxWins = Math.max(...Object.values(chainWins));
+  const totalProducts = allProducts.length;
+
+  // Sort chains by wins desc
+  const sortedChains = chains.sort((a, b) => (chainWins[b]||0) - (chainWins[a]||0));
+
+  const cards = sortedChains.map((chain, rank) => {
+    const wins = chainWins[chain] || 0;
+    const total = chainTotals[chain] || 0;
+    const count = chainCounts[chain] || 1;
+    const avg = total / count;
+    const pct = Math.round((wins / totalProducts) * 100);
+    const color = CHAIN_COLORS[chain] || '#888';
+    const storeCount = selectedStores.filter(s => getChainFromStore(s) === chain).length;
+    const rankLabel = rank === 0 ? '🥇 Best Value' : rank === 1 ? '🥈 Runner-up' : rank === 2 ? '🥉 Third' : '';
+
+    return `<div class="chain-card">
+      <div class="chain-card-header">
+        <div class="chain-logo" style="background:${color}">${chain[0]}</div>
+        <div>
+          <div class="chain-card-title">${chain}</div>
+          <div class="chain-card-sub">${storeCount} location${storeCount!==1?'s':''} selected${rankLabel?' · '+rankLabel:''}</div>
+        </div>
+      </div>
+      <div class="chain-wins-bar"><div class="chain-wins-fill" style="width:${maxWins>0?Math.round((wins/maxWins)*100):0}%;background:${color}"></div></div>
+      <div class="chain-stats">
+        <div class="chain-stat"><div class="cs-num" style="color:${color}">${wins}</div><div class="cs-lbl">Cheapest Items</div></div>
+        <div class="chain-stat"><div class="cs-num" style="color:${color}">${pct}%</div><div class="cs-lbl">Win Rate</div></div>
+        <div class="chain-stat"><div class="cs-num" style="color:${color}">$${avg.toFixed(2)}</div><div class="cs-lbl">Avg Item Price</div></div>
+        <div class="chain-stat"><div class="cs-num" style="color:${color}">$${total.toFixed(0)}</div><div class="cs-lbl">Full Cart Cost</div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const winner = sortedChains[0];
+  const loser = sortedChains[sortedChains.length - 1];
+  const cartSavings = (chainTotals[loser] - chainTotals[winner]).toFixed(2);
+
+  el.innerHTML = `
+    <div class="summary-banner" style="margin-bottom:20px;">
+      <div class="summary-stat"><div class="num">${winner}</div><div class="lbl">Best Value Chain</div></div>
+      <div class="summary-divider"></div>
+      <div class="summary-stat"><div class="num">$${cartSavings}</div><div class="lbl">vs. Most Expensive</div></div>
+      <div class="summary-divider"></div>
+      <div class="summary-stat"><div class="num">${chainWins[winner]||0}</div><div class="lbl">Items Where Cheapest</div></div>
+      <div class="summary-divider"></div>
+      <div class="summary-stat"><div class="num">${Math.round(((chainWins[winner]||0)/totalProducts)*100)}%</div><div class="lbl">Win Rate</div></div>
+    </div>
+    <div class="best-store-grid">${cards}</div>
+    <p class="best-store-note">Based on ${brandMode === 'name' ? 'name brand' : 'store brand'} prices across ${totalProducts} products at ${selectedStores.length} selected stores. Switch to Store Brand mode for Aldi comparisons.</p>`;
+}
+
+// ===== PAGINATION =====
+function renderPagination(totalPages) {
+  const el = document.getElementById('pagination');
+  if (totalPages <= 1) { el.innerHTML = ''; return; }
+  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>← Prev</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    else if (Math.abs(i - currentPage) === 3) html += `<span style="padding:7px 4px;color:#999;">…</span>`;
+  }
+  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>Next →</button>`;
+  el.innerHTML = html;
+}
+
+function goPage(p) { currentPage = p; renderAll(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+// ===== START =====
+init();
+</script>
+</body>
+</html>
