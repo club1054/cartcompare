@@ -3,599 +3,565 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CartCompare V3 — Citrus County Grocery Price Comparison</title>
+  <title>CartCompare — Citrus County</title>
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --green: #2e7d32; --green-light: #4caf50; --green-bg: #e8f5e9;
-      --red: #c62828; --gray: #757575; --gray-light: #f5f5f5;
-      --border: #e0e0e0; --shadow: 0 2px 8px rgba(0,0,0,0.08); --radius: 10px;
-    }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4f0; color: #1a1a1a; min-height: 100vh; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f0; color: #1a1a1a; min-height: 100vh; }
 
-    /* HEADER */
-    header { background: linear-gradient(135deg, var(--green) 0%, #1b5e20 100%); color: #fff; padding: 0 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 100; }
-    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 12px; }
-    .logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; }
-    .logo span { color: #a5d6a7; }
-    .header-tagline { font-size: 13px; opacity: 0.85; }
-    @media(max-width:500px){ .header-tagline { display: none; } }
+    /* NAV */
+    .topnav { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 0 16px; display: flex; align-items: center; gap: 10px; height: 58px; position: sticky; top: 0; z-index: 100; }
+    .topnav-logo { height: 42px; width: auto; }
+    .topnav-brand { font-size: 20px; font-weight: 900; color: #1a4d1f; }
+    .topnav-brand span { color: #43b02a; }
+    .nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .cart-btn { background: #43b02a; color: #fff; border: none; padding: 8px 16px; border-radius: 22px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .cart-badge { background: #fff; color: #43b02a; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+    .brand-toggle { display: flex; background: #f0f0f0; border-radius: 20px; padding: 3px; }
+    .brand-btn { padding: 5px 12px; border-radius: 17px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; background: transparent; color: #888; transition: all 0.2s; }
+    .brand-btn.active { background: #43b02a; color: #fff; }
 
-    /* STORE BAR */
-    .store-bar { background: #fff; border-bottom: 2px solid var(--border); padding: 10px 20px; position: sticky; top: 60px; z-index: 90; }
-    .store-bar-inner { max-width: 1200px; margin: 0 auto; }
-    .store-bar-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
-    .store-bar-label { font-size: 12px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
-    .town-filter { display: flex; gap: 6px; flex-wrap: wrap; }
-    .town-btn { padding: 3px 10px; border-radius: 12px; border: 1.5px solid var(--border); background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--gray); transition: all 0.15s; }
-    .town-btn:hover { border-color: var(--green-light); color: var(--green); }
-    .town-btn.active { border-color: var(--green); background: var(--green-bg); color: var(--green); }
-    .store-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .store-chip { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; border: 2px solid var(--border); background: #fff; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; user-select: none; white-space: nowrap; }
-    .store-chip:hover { border-color: var(--green-light); background: var(--green-bg); }
-    .store-chip.active { border-color: var(--green); background: var(--green-bg); color: var(--green); }
-    .chain-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .dot-walmart { background: #0071ce; } .dot-publix { background: #007a3d; }
-    .dot-aldi { background: #00539b; } .dot-target { background: #cc0000; }
+    /* MAIN LAYOUT */
+    .main-wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }
+    .layout { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
 
-    /* TABS */
-    .tabs-bar { background: #fff; border-bottom: 2px solid var(--border); padding: 0 20px; }
-    .tabs-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 0; }
-    .tab-btn { padding: 12px 20px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--gray); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
-    .tab-btn:hover { color: var(--green); }
-    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+    /* FILTER BAR */
+    .filter-bar { background: #fff; border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .filter-label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
+    .town-pill { padding: 5px 12px; border-radius: 20px; border: 1.5px solid #e0e0e0; background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: #555; transition: all 0.2s; }
+    .town-pill.active { background: #1a4d1f; color: #fff; border-color: #1a4d1f; }
+    .search-input { flex: 1; min-width: 180px; padding: 8px 12px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 14px; outline: none; }
+    .search-input:focus { border-color: #43b02a; }
+    .cat-select { padding: 8px 12px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 13px; background: #fff; outline: none; cursor: pointer; }
 
-    /* CONTROLS BAR */
-    .controls-bar { background: #fff; border-bottom: 1px solid var(--border); padding: 10px 20px; }
-    .controls-inner { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    .search-box { flex: 1; min-width: 200px; padding: 8px 14px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; }
-    .search-box:focus { border-color: var(--green-light); }
-    .category-select { padding: 8px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; background: #fff; cursor: pointer; outline: none; }
-    .category-select:focus { border-color: var(--green-light); }
-    .brand-toggle { display: flex; border: 2px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .brand-toggle button { padding: 7px 14px; border: none; background: #fff; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--gray); transition: all 0.15s; }
-    .brand-toggle button.active { background: var(--green); color: #fff; }
-    .results-count { font-size: 13px; color: var(--gray); margin-left: auto; }
-
-    /* MAIN */
-    main { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    /* STATE BOX */
-    .state-box { text-align: center; padding: 60px 20px; color: var(--gray); }
-    .state-box .icon { font-size: 48px; margin-bottom: 12px; }
-    .state-box h3 { font-size: 18px; margin-bottom: 6px; color: #444; }
-    .state-box p { font-size: 14px; }
-
-    /* PRODUCT GRID */
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-    .product-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; transition: transform 0.15s, box-shadow 0.15s; }
-    .product-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
-    .card-header { padding: 14px 14px 10px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; }
-    .card-img-placeholder { width: 52px; height: 52px; border-radius: 6px; background: var(--gray-light); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-    .card-title-area { flex: 1; min-width: 0; }
-    .card-category { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray); font-weight: 600; }
-    .card-name { font-size: 14px; font-weight: 700; line-height: 1.3; margin-top: 2px; }
-    .card-size { font-size: 12px; color: var(--gray); margin-top: 2px; }
-    .card-prices { padding: 10px 14px; }
-    .price-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f0f0f0; }
+    /* PRODUCT CARDS */
+    .product-grid { display: flex; flex-direction: column; gap: 12px; }
+    .product-card { background: #fff; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+    .pc-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px 10px; border-bottom: 1px solid #f0f0f0; }
+    .pc-cat { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; }
+    .pc-name { font-size: 15px; font-weight: 800; color: #1a1a1a; }
+    .pc-meta { font-size: 12px; color: #888; }
+    .pc-add-btn { margin-left: auto; background: #43b02a; color: #fff; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 300; line-height: 1; }
+    .pc-add-btn:hover { background: #37941f; }
+    .pc-prices { padding: 10px 16px 14px; }
+    .price-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f8f8f8; }
     .price-row:last-child { border-bottom: none; }
-    .price-store { display: flex; align-items: center; gap: 6px; }
-    .price-store-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .price-store-name { font-size: 12px; font-weight: 600; color: #444; }
-    .price-store-loc { font-size: 11px; color: var(--gray); }
-    .price-value { display: flex; align-items: center; gap: 6px; }
-    .price-amount { font-size: 16px; font-weight: 800; color: #1a1a1a; }
-    .price-amount.best { color: var(--green); }
-    .sale-badge { background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; }
-    .savings-bar { margin-top: 10px; padding: 8px 10px; background: var(--green-bg); border-radius: 6px; display: flex; align-items: center; justify-content: space-between; }
-    .savings-label { font-size: 11px; color: var(--green); font-weight: 600; }
-    .savings-amount { font-size: 13px; font-weight: 800; color: var(--green); }
+    .pr-rank { width: 20px; font-size: 11px; font-weight: 700; color: #bbb; flex-shrink: 0; }
+    .pr-rank.best { color: #43b02a; }
+    .pr-store { font-size: 13px; font-weight: 600; flex: 1; }
+    .pr-location { font-size: 11px; color: #888; }
+    .pr-price { font-size: 15px; font-weight: 800; color: #1a1a1a; }
+    .pr-price.best { color: #43b02a; }
+    .sale-badge { background: #ef4444; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; margin-left: 6px; }
+    .savings-row { display: flex; align-items: center; justify-content: flex-end; padding: 8px 0 0; }
+    .savings-chip { background: #f0fdf4; color: #16a34a; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
 
-    /* SUMMARY BANNER */
-    .summary-banner { background: linear-gradient(135deg, var(--green) 0%, #1b5e20 100%); color: #fff; border-radius: var(--radius); padding: 16px 20px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
-    .summary-stat { text-align: center; }
-    .summary-stat .num { font-size: 28px; font-weight: 800; }
-    .summary-stat .lbl { font-size: 11px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; }
-    .summary-divider { width: 1px; background: rgba(255,255,255,0.3); height: 40px; }
+    /* CART PANEL */
+    .cart-panel { background: #fff; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 74px; }
+    .cp-header { background: linear-gradient(135deg, #1a4d1f 0%, #2d7a35 100%); border-radius: 14px 14px 0 0; padding: 16px 18px; color: #fff; }
+    .cp-title { font-size: 16px; font-weight: 900; margin-bottom: 4px; }
+    .cp-sub { font-size: 12px; opacity: 0.8; }
+    .cp-body { padding: 14px 16px; }
+    .cp-empty { text-align: center; padding: 30px 0; color: #bbb; font-size: 13px; }
+    .cp-empty-icon { font-size: 36px; margin-bottom: 8px; }
 
-    /* BEST STORE VIEW */
-    .best-store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .chain-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-    .chain-card-header { padding: 16px; display: flex; align-items: center; gap: 12px; }
-    .chain-logo { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: #fff; flex-shrink: 0; }
-    .chain-card-title { font-size: 17px; font-weight: 800; }
-    .chain-card-sub { font-size: 12px; color: var(--gray); margin-top: 2px; }
-    .chain-stats { padding: 0 16px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .chain-stat { background: var(--gray-light); border-radius: 8px; padding: 10px; text-align: center; }
-    .chain-stat .cs-num { font-size: 20px; font-weight: 800; color: var(--green); }
-    .chain-stat .cs-lbl { font-size: 11px; color: var(--gray); margin-top: 2px; }
-    .chain-wins-bar { height: 6px; background: var(--border); border-radius: 3px; margin: 0 16px 16px; overflow: hidden; }
-    .chain-wins-fill { height: 100%; border-radius: 3px; background: var(--green-light); transition: width 0.5s; }
-    .best-store-note { font-size: 13px; color: var(--gray); text-align: center; margin-top: 8px; }
+    /* CART ITEMS */
+    .cart-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+    .cart-item:last-child { border-bottom: none; }
+    .ci-name { font-size: 13px; font-weight: 600; flex: 1; line-height: 1.3; }
+    .ci-meta { font-size: 11px; color: #888; display: block; }
+    .qty-ctrl { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .qty-btn { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #e0e0e0; background: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #43b02a; line-height: 1; }
+    .qty-btn:hover { background: #f0fdf4; border-color: #43b02a; }
+    .qty-num { font-size: 14px; font-weight: 700; min-width: 18px; text-align: center; }
+    .btn-remove { background: none; border: none; color: #ddd; font-size: 16px; cursor: pointer; padding: 2px; }
+    .btn-remove:hover { color: #ef4444; }
+
+    /* STORE TOTALS */
+    .totals-section { margin-top: 14px; border-top: 2px solid #f0f0f0; padding-top: 14px; }
+    .totals-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 10px; }
+    .store-total-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 10px; margin-bottom: 6px; border: 1.5px solid #e8e8e8; }
+    .store-total-row.winner { border-color: #43b02a; background: #f0fdf4; }
+    .st-name { font-size: 13px; font-weight: 700; }
+    .st-price { font-size: 16px; font-weight: 900; }
+    .store-total-row.winner .st-price { color: #43b02a; }
+    .winner-badge { font-size: 10px; font-weight: 700; background: #43b02a; color: #fff; padding: 2px 8px; border-radius: 10px; }
+    .savings-summary { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 10px; padding: 12px 14px; margin-top: 10px; text-align: center; }
+    .ss-label { font-size: 11px; font-weight: 700; color: #16a34a; text-transform: uppercase; letter-spacing: 0.5px; }
+    .ss-amount { font-size: 26px; font-weight: 900; color: #16a34a; }
+    .ss-sub { font-size: 11px; color: #888; }
+    .clear-btn { width: 100%; margin-top: 12px; background: transparent; color: #ef4444; border: 1.5px solid #fca5a5; padding: 9px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .clear-btn:hover { background: #fef2f2; }
 
     /* PAGINATION */
-    .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; flex-wrap: wrap; }
-    .page-btn { padding: 7px 13px; border: 2px solid var(--border); border-radius: 6px; background: #fff; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
-    .page-btn:hover { border-color: var(--green-light); background: var(--green-bg); }
-    .page-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
-    .page-btn:disabled { opacity: 0.4; cursor: default; }
+    .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+    .page-btn { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid #e0e0e0; background: #fff; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #555; }
+    .page-btn.active { background: #43b02a; color: #fff; border-color: #43b02a; }
+    .page-btn:hover:not(.active) { border-color: #43b02a; color: #43b02a; }
+    .page-nav { padding: 0 12px; border-radius: 17px; width: auto; }
 
-    /* FOOTER */
-    footer { text-align: center; padding: 20px; font-size: 12px; color: var(--gray); border-top: 1px solid var(--border); margin-top: 40px; background: #fff; }
+    /* STATS BAR */
+    .stats-bar { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .stat-chip { background: #fff; border-radius: 10px; padding: 10px 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); flex: 1; min-width: 100px; text-align: center; }
+    .stat-num { font-size: 22px; font-weight: 900; color: #1a4d1f; }
+    .stat-label { font-size: 11px; color: #888; font-weight: 600; }
 
-    /* SPINNER */
-    .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+    /* LOADING */
+    .loading { text-align: center; padding: 60px 20px; color: #888; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top-color: #43b02a; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    @media(max-width:480px) {
-      .product-grid { grid-template-columns: 1fr; }
-      .controls-inner { flex-direction: column; align-items: stretch; }
-      .results-count { margin-left: 0; }
-    }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
-    <div class="logo">Cart<span>Compare</span></div>
-    <div class="header-tagline">Citrus County Grocery Price Comparison</div>
-    <div style="font-size:12px;opacity:0.7;">Beta v3.0</div>
-  </div>
-</header>
-
-<!-- Store Selector -->
-<div class="store-bar">
-  <div class="store-bar-inner">
-    <div class="store-bar-top">
-      <div class="store-bar-label">Select stores to compare</div>
-      <div class="town-filter" id="townFilter"></div>
-    </div>
-    <div class="store-chips" id="storeChips">
-      <div style="color:#888;font-size:13px;">Loading stores...</div>
-    </div>
-  </div>
-</div>
-
-<!-- Tabs -->
-<div class="tabs-bar">
-  <div class="tabs-inner">
-    <button class="tab-btn active" onclick="switchTab('prices')">🛒 Price Comparison</button>
-    <button class="tab-btn" onclick="switchTab('best')">🏆 Best Store</button>
-  </div>
-</div>
-
-<!-- Controls (only for prices tab) -->
-<div class="controls-bar" id="controlsBar">
-  <div class="controls-inner">
-    <input type="text" class="search-box" id="searchBox" placeholder="🔍  Search products..." oninput="onSearch()"/>
-    <select class="category-select" id="categorySelect" onchange="onCategoryChange()">
-      <option value="">All Categories</option>
-    </select>
+<!-- TOP NAV -->
+<nav class="topnav">
+  <img class="topnav-logo" src="https://club1054.github.io/cartcompare/logo.png" onerror="this.style.display='none'" alt="CartCompare"/>
+  <div class="topnav-brand"><span>Cart</span>Compare</div>
+  <div class="nav-right">
     <div class="brand-toggle">
-      <button id="btnNameBrand" class="active" onclick="setBrandMode('name')">Name Brand</button>
-      <button id="btnStoreBrand" onclick="setBrandMode('store')">Store Brand</button>
+      <button class="brand-btn active" id="btnName" onclick="setBrand('name')">Name Brand</button>
+      <button class="brand-btn" id="btnStore" onclick="setBrand('store')">Store Brand</button>
     </div>
-    <div class="results-count" id="resultsCount"></div>
+    <button class="cart-btn" onclick="scrollToCart()">
+      🛒 Cart <span class="cart-badge" id="cartCount">0</span>
+    </button>
   </div>
-</div>
+</nav>
 
-<main>
-  <!-- Prices Tab -->
-  <div id="tab-prices" class="tab-panel active">
-    <div id="summaryBanner"></div>
-    <div id="productGrid">
-      <div class="state-box">
-        <div class="spinner"></div>
-        <h3>Loading CartCompare V3...</h3>
-        <p>Fetching prices from Citrus County stores</p>
+<div class="main-wrap">
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-chip"><div class="stat-num" id="statProducts">—</div><div class="stat-label">Products</div></div>
+    <div class="stat-chip"><div class="stat-num" id="statStores">—</div><div class="stat-label">Stores</div></div>
+    <div class="stat-chip"><div class="stat-num" id="statSavings">—</div><div class="stat-label">Max Savings</div></div>
+    <div class="stat-chip"><div class="stat-num" id="statCart">$0.00</div><div class="stat-label">Cart (Best)</div></div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-row" style="margin-bottom:10px;">
+      <span class="filter-label">Town:</span>
+      <button class="town-pill active" onclick="setTown('all',this)">All</button>
+      <button class="town-pill" onclick="setTown('Crystal River',this)">Crystal River</button>
+      <button class="town-pill" onclick="setTown('Hernando',this)">Hernando</button>
+      <button class="town-pill" onclick="setTown('Homosassa',this)">Homosassa</button>
+      <button class="town-pill" onclick="setTown('Inverness',this)">Inverness</button>
+      <button class="town-pill" onclick="setTown('Lecanto',this)">Lecanto</button>
+    </div>
+    <div class="filter-row">
+      <input class="search-input" type="text" placeholder="🔍 Search products..." id="searchBox" oninput="onSearch()"/>
+      <select class="cat-select" id="catSelect" onchange="onSearch()">
+        <option value="">All Categories</option>
+        <option>Beverages</option>
+        <option>Bread & Bakery</option>
+        <option>Breakfast & Cereal</option>
+        <option>Dairy</option>
+        <option>Deli & Prepared</option>
+        <option>Frozen Foods</option>
+        <option>Meat & Seafood</option>
+        <option>Pantry & Dry Goods</option>
+        <option>Personal Care</option>
+        <option>Produce</option>
+        <option>Snacks</option>
+        <option>Household</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- PRODUCT LIST -->
+    <div>
+      <div id="productGrid" class="product-grid">
+        <div class="loading"><div class="spinner"></div>Loading products & prices…</div>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- CART PANEL -->
+    <div class="cart-panel" id="cartPanel">
+      <div class="cp-header">
+        <div class="cp-title">🛒 My Cart</div>
+        <div class="cp-sub" id="cpSub">Add items to compare store totals</div>
+      </div>
+      <div class="cp-body" id="cartBody">
+        <div class="cp-empty">
+          <div class="cp-empty-icon">🛒</div>
+          <div>Your cart is empty</div>
+          <div style="margin-top:6px;font-size:12px;color:#bbb">Tap + on any product to add it</div>
+        </div>
       </div>
     </div>
-    <div id="pagination"></div>
   </div>
-
-  <!-- Best Store Tab -->
-  <div id="tab-best" class="tab-panel">
-    <div id="bestStoreContent">
-      <div class="state-box"><div class="spinner"></div><h3>Calculating...</h3></div>
-    </div>
-  </div>
-</main>
-
-<footer>
-  <strong>CartCompare V3</strong> &mdash; Citrus County, Florida &mdash; Beta &mdash;
-  Prices are seeded estimates. Always verify at store. &copy; 2026 CartCompare
-</footer>
+</div>
 
 <script>
-// ===== CONFIG =====
 const SUPABASE_URL = 'https://kdnkupipubiwchoiuedw.supabase.co/rest/v1';
 const SUPABASE_KEY = 'sb_publishable_w7MlMQ6_6JJNJp_2MGE0mw_bE9TtXkX';
-const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
 
-// ===== STORE NAME OVERRIDES (for legacy IDs 1-4 with generic names in DB) =====
+// Store name overrides for legacy DB entries
 const STORE_OVERRIDES = {
-  1: { name: 'Walmart Supercenter Lecanto',   location: 'Lecanto, FL',      address: '1936 N Lecanto Hwy, Lecanto, FL 34461' },
-  2: { name: 'Walmart Supercenter Inverness', location: 'Inverness, FL',    address: '2461 E Gulf To Lake Hwy, Inverness, FL 34453' },
-  3: { name: 'Publix Crystal River',          location: 'Crystal River, FL',address: '6760 W Gulf To Lake Hwy, Crystal River, FL 34429' },
-  4: { name: 'Publix Citrus Hills',           location: 'Hernando, FL',     address: '2685 N Forest Ridge Blvd, Hernando, FL 34442' },
+  1: { name: 'Aldi Crystal River', location: 'Crystal River, FL', chain: 'Aldi' },
+  2: { name: 'Publix Crystal River', location: 'Crystal River, FL', chain: 'Publix' },
+  3: { name: 'Target Crystal River', location: 'Crystal River, FL', chain: 'Target' },
+  4: { name: 'Walmart Crystal River', location: 'Crystal River, FL', chain: 'Walmart' },
 };
 
-// ===== STATE =====
-let allStores = [];
-let allProducts = [];
-let allPrices = [];
-let selectedStoreIds = new Set();
-let brandMode = 'name';
-let searchQuery = '';
-let selectedCategory = '';
-let selectedTown = '';
+const CHAIN_COLORS = {
+  'Walmart': '#0071CE', 'Publix': '#007749', 'Aldi': '#00529B', 'Target': '#CC0000'
+};
+
+let allStores = [], allProducts = [], allPrices = [];
+let filteredProducts = [];
+let currentBrand = 'name';
+let currentTown = 'all';
 let currentPage = 1;
-let currentTab = 'prices';
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 15;
+let cart = {}; // { productId: qty }
 
-const CHAIN_DOT_CLASS = { 'Walmart':'dot-walmart','Publix':'dot-publix','Aldi':'dot-aldi','Target':'dot-target' };
-const CHAIN_COLORS    = { 'Walmart':'#0071ce','Publix':'#007a3d','Aldi':'#00539b','Target':'#cc0000' };
-const CHAIN_EMOJI     = { 'Walmart':'🔵','Publix':'🟢','Aldi':'🔷','Target':'🔴' };
-const CATEGORY_EMOJIS = {
-  'Dairy':'🥛','Produce':'🥦','Meat & Seafood':'🥩','Bakery':'🍞','Frozen':'🧊',
-  'Beverages':'🥤','Snacks':'🍿','Pantry':'🫙','Breakfast':'🥞','Condiments':'🧴',
-  'Personal Care':'🧴','Household':'🧹','Baby':'👶','Pet':'🐾','Deli':'🥪',
-};
-
-// ===== HELPERS =====
-async function query(path) {
+async function api(path) {
   const r = await fetch(SUPABASE_URL + path, { headers: HEADERS });
-  if (!r.ok) throw new Error(await r.text());
   return r.json();
 }
 
-function applyOverrides(store) {
-  if (STORE_OVERRIDES[store.id]) return { ...store, ...STORE_OVERRIDES[store.id] };
-  return store;
+function getStore(s) {
+  const ov = STORE_OVERRIDES[s.id];
+  if (ov) return { ...s, ...ov };
+  // Derive chain from name
+  const n = s.name || '';
+  let chain = 'Other';
+  if (n.toLowerCase().includes('walmart')) chain = 'Walmart';
+  else if (n.toLowerCase().includes('publix')) chain = 'Publix';
+  else if (n.toLowerCase().includes('aldi')) chain = 'Aldi';
+  else if (n.toLowerCase().includes('target')) chain = 'Target';
+  return { ...s, chain };
 }
 
-function getChainFromStore(store) {
-  const n = store.name.toLowerCase();
-  if (n.includes('walmart')) return 'Walmart';
-  if (n.includes('publix'))  return 'Publix';
-  if (n.includes('aldi'))    return 'Aldi';
-  if (n.includes('target'))  return 'Target';
+function getStoreTown(s) {
+  const loc = (s.location || '').toLowerCase();
+  if (loc.includes('crystal river')) return 'Crystal River';
+  if (loc.includes('hernando')) return 'Hernando';
+  if (loc.includes('homosassa')) return 'Homosassa';
+  if (loc.includes('inverness')) return 'Inverness';
+  if (loc.includes('lecanto')) return 'Lecanto';
   return 'Other';
 }
 
-function getDisplayPrice(rec) {
-  if (!rec) return null;
-  if (brandMode === 'name') {
-    if (rec.on_sale && rec.sale_price) return { price: rec.sale_price, onSale: true };
-    return rec.name_brand_price ? { price: rec.name_brand_price, onSale: false } : null;
-  }
-  return rec.store_brand_price ? { price: rec.store_brand_price, onSale: false } : null;
+function getActiveStores() {
+  return allStores.filter(s => {
+    if (currentTown === 'all') return true;
+    return getStoreTown(s) === currentTown;
+  });
+}
+
+async function loadData() {
+  const [stores, products, prices] = await Promise.all([
+    api('/v3_stores?select=*&order=id.asc'),
+    api('/v3_products?select=*&order=category.asc,name.asc&limit=200'),
+    api('/v3_prices?select=*&limit=2000')
+  ]);
+  allStores = stores.map(getStore);
+  allProducts = products;
+  allPrices = prices;
+  filteredProducts = [...allProducts];
+  updateStats();
+  renderProducts();
+}
+
+function updateStats() {
+  document.getElementById('statProducts').textContent = allProducts.length;
+  document.getElementById('statStores').textContent = allStores.length;
+  // Calculate max potential savings
+  let totalSavings = 0;
+  allProducts.forEach(p => {
+    const pricesForP = allPrices.filter(pr => pr.product_id === p.id);
+    const vals = pricesForP.map(pr => currentBrand === 'name' ? pr.name_brand_price : pr.store_brand_price).filter(v => v > 0);
+    if (vals.length >= 2) {
+      totalSavings += Math.max(...vals) - Math.min(...vals);
+    }
+  });
+  document.getElementById('statSavings').textContent = '$' + totalSavings.toFixed(0);
+}
+
+function onSearch() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  const cat = document.getElementById('catSelect').value;
+  filteredProducts = allProducts.filter(p => {
+    const matchQ = !q || p.name.toLowerCase().includes(q) || (p.category||'').toLowerCase().includes(q);
+    const matchCat = !cat || p.category === cat;
+    return matchQ && matchCat;
+  });
+  currentPage = 1;
+  renderProducts();
+}
+
+function setTown(town, el) {
+  currentTown = town;
+  document.querySelectorAll('.town-pill').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderProducts();
+}
+
+function setBrand(brand) {
+  currentBrand = brand;
+  document.getElementById('btnName').classList.toggle('active', brand === 'name');
+  document.getElementById('btnStore').classList.toggle('active', brand === 'store');
+  updateStats();
+  renderProducts();
+  renderCart();
 }
 
 function getPriceForStore(productId, storeId) {
-  return allPrices.find(p => p.product_id === productId && p.store_id === storeId) || null;
+  const p = allPrices.find(pr => pr.product_id === productId && pr.store_id === storeId);
+  if (!p) return null;
+  const price = currentBrand === 'name' ? p.name_brand_price : p.store_brand_price;
+  if (!price || price <= 0) return null;
+  return { price, onSale: p.on_sale, salePrice: p.sale_price };
 }
 
-// ===== INIT =====
-async function init() {
-  try {
-    const [rawStores, products, prices] = await Promise.all([
-      query('/v3_stores?select=*&active=eq.true&order=id'),
-      query('/v3_products?select=*&order=category,name&limit=200'),
-      query('/v3_prices?select=*&limit=2000'),
-    ]);
+function renderProducts() {
+  const activeStores = getActiveStores();
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageProducts = filteredProducts.slice(start, start + PAGE_SIZE);
+  const grid = document.getElementById('productGrid');
 
-    // Apply name overrides for legacy stores
-    allStores = rawStores.map(applyOverrides);
-    allProducts = products;
-    allPrices = prices;
-
-    allStores.forEach(s => selectedStoreIds.add(s.id));
-
-    renderTownFilter();
-    renderStoreChips();
-    populateCategoryDropdown();
-    renderAll();
-  } catch (e) {
-    document.getElementById('productGrid').innerHTML = `<div class="state-box"><div class="icon">⚠️</div><h3>Failed to load</h3><p>${e.message}</p></div>`;
-  }
-}
-
-// ===== TABS =====
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('tab-' + tab).classList.add('active');
-  document.getElementById('controlsBar').style.display = tab === 'prices' ? 'block' : 'none';
-  if (tab === 'best') renderBestStore();
-}
-
-// ===== TOWN FILTER =====
-function getTowns() {
-  const towns = [...new Set(allStores.map(s => s.location))].sort();
-  return towns;
-}
-
-function renderTownFilter() {
-  const el = document.getElementById('townFilter');
-  const towns = getTowns();
-  el.innerHTML = `<button class="town-btn active" onclick="setTown('')">All Towns</button>` +
-    towns.map(t => `<button class="town-btn" onclick="setTown('${t}')">${t.replace(', FL','')}</button>`).join('');
-}
-
-function setTown(town) {
-  selectedTown = town;
-  document.querySelectorAll('.town-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent === (town ? town.replace(', FL','') : 'All Towns'));
-  });
-  // Update selected store IDs to match town
-  if (town) {
-    const townStores = allStores.filter(s => s.location === town);
-    selectedStoreIds = new Set(townStores.map(s => s.id));
-  } else {
-    selectedStoreIds = new Set(allStores.map(s => s.id));
-  }
-  renderStoreChips();
-  currentPage = 1;
-  renderAll();
-  if (currentTab === 'best') renderBestStore();
-}
-
-// ===== STORE CHIPS =====
-function renderStoreChips() {
-  const el = document.getElementById('storeChips');
-  const visible = selectedTown ? allStores.filter(s => s.location === selectedTown) : allStores;
-  el.innerHTML = visible.map(store => {
-    const chain = getChainFromStore(store);
-    const active = selectedStoreIds.has(store.id) ? 'active' : '';
-    const dotClass = CHAIN_DOT_CLASS[chain] || 'dot-walmart';
-    return `<div class="store-chip ${active}" onclick="toggleStore(${store.id})" title="${store.address}">
-      <span class="chain-dot ${dotClass}"></span>
-      <span>${store.name}</span>
-    </div>`;
-  }).join('');
-}
-
-function toggleStore(storeId) {
-  if (selectedStoreIds.has(storeId)) {
-    if (selectedStoreIds.size > 1) selectedStoreIds.delete(storeId);
-  } else {
-    selectedStoreIds.add(storeId);
-  }
-  renderStoreChips();
-  currentPage = 1;
-  renderAll();
-  if (currentTab === 'best') renderBestStore();
-}
-
-// ===== CATEGORY =====
-function populateCategoryDropdown() {
-  const cats = [...new Set(allProducts.map(p => p.category))].sort();
-  const sel = document.getElementById('categorySelect');
-  cats.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c;
-    opt.textContent = (CATEGORY_EMOJIS[c] || '') + ' ' + c;
-    sel.appendChild(opt);
-  });
-}
-
-// ===== BRAND / SEARCH / FILTER =====
-function setBrandMode(mode) {
-  brandMode = mode;
-  document.getElementById('btnNameBrand').classList.toggle('active', mode === 'name');
-  document.getElementById('btnStoreBrand').classList.toggle('active', mode === 'store');
-  currentPage = 1;
-  renderAll();
-}
-function onSearch() { searchQuery = document.getElementById('searchBox').value.toLowerCase().trim(); currentPage = 1; renderAll(); }
-function onCategoryChange() { selectedCategory = document.getElementById('categorySelect').value; currentPage = 1; renderAll(); }
-
-function getFilteredProducts() {
-  return allProducts.filter(p => {
-    if (selectedCategory && p.category !== selectedCategory) return false;
-    if (searchQuery) {
-      const hay = [p.name, p.category, p.name_brand, p.store_brand].join(' ').toLowerCase();
-      if (!hay.includes(searchQuery)) return false;
-    }
-    return true;
-  });
-}
-
-// ===== RENDER ALL =====
-function renderAll() {
-  const filtered = getFilteredProducts();
-  const total = filtered.length;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
-  currentPage = Math.min(currentPage, Math.max(1, totalPages));
-  const pageProducts = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-
-  document.getElementById('resultsCount').textContent =
-    total + ' product' + (total !== 1 ? 's' : '') + (selectedCategory ? ' in ' + selectedCategory : '');
-
-  renderSummary(filtered);
-  renderGrid(pageProducts);
-  renderPagination(totalPages);
-}
-
-function renderSummary(products) {
-  const el = document.getElementById('summaryBanner');
-  if (!products.length) { el.innerHTML = ''; return; }
-  let totalSavings = 0, productsWithSavings = 0;
-  products.forEach(p => {
-    const prices = [...selectedStoreIds].map(sid => { const dp = getDisplayPrice(getPriceForStore(p.id, sid)); return dp ? dp.price : null; }).filter(x => x !== null);
-    if (prices.length >= 2) { const s = Math.max(...prices) - Math.min(...prices); if (s > 0) { totalSavings += s; productsWithSavings++; } }
-  });
-  el.innerHTML = `<div class="summary-banner">
-    <div class="summary-stat"><div class="num">${products.length}</div><div class="lbl">Products</div></div>
-    <div class="summary-divider"></div>
-    <div class="summary-stat"><div class="num">${selectedStoreIds.size}</div><div class="lbl">Stores</div></div>
-    <div class="summary-divider"></div>
-    <div class="summary-stat"><div class="num">$${totalSavings.toFixed(2)}</div><div class="lbl">Potential Savings</div></div>
-    <div class="summary-divider"></div>
-    <div class="summary-stat"><div class="num">${productsWithSavings}</div><div class="lbl">Items w/ Price Diff</div></div>
-  </div>`;
-}
-
-function renderGrid(products) {
-  const el = document.getElementById('productGrid');
-  if (!products.length) { el.innerHTML = `<div class="state-box"><div class="icon">🔍</div><h3>No products found</h3><p>Try a different search or category</p></div>`; return; }
-  el.innerHTML = `<div class="product-grid">${products.map(p => renderCard(p)).join('')}</div>`;
-}
-
-function renderCard(product) {
-  const selectedStores = allStores.filter(s => selectedStoreIds.has(s.id));
-  const storePrices = selectedStores.map(store => {
-    const rec = getPriceForStore(product.id, store.id);
-    const dp = getDisplayPrice(rec);
-    return { store, chain: getChainFromStore(store), price: dp ? dp.price : null, onSale: dp ? dp.onSale : false };
-  }).filter(sp => sp.price !== null).sort((a, b) => a.price - b.price);
-
-  if (!storePrices.length) return `<div class="product-card"><div class="card-header"><div class="card-img-placeholder">${CATEGORY_EMOJIS[product.category]||'🛒'}</div><div class="card-title-area"><div class="card-category">${product.category}</div><div class="card-name">${product.name}</div></div></div><div class="card-prices" style="color:#999;font-size:13px;padding:14px;">No prices for selected stores</div></div>`;
-
-  const savings = storePrices[storePrices.length-1].price - storePrices[0].price;
-  const brandLabel = brandMode === 'name' ? (product.name_brand || 'Name Brand') : (product.store_brand || 'Store Brand');
-
-  const priceRows = storePrices.map((sp, i) => `
-    <div class="price-row">
-      <div class="price-store">
-        <span class="price-store-dot ${CHAIN_DOT_CLASS[sp.chain]||'dot-walmart'}"></span>
-        <div>
-          <div class="price-store-name">${sp.store.name}</div>
-          ${sp.store.location ? `<div class="price-store-loc">${sp.store.location}</div>` : ''}
-        </div>
-      </div>
-      <div class="price-value">
-        ${sp.onSale ? '<span class="sale-badge">SALE</span>' : ''}
-        <span class="price-amount ${i===0?'best':''}">$${sp.price.toFixed(2)}</span>
-      </div>
-    </div>`).join('');
-
-  const savingsBar = savings > 0.01 ? `<div class="savings-bar"><span class="savings-label">💰 Best vs. Most Expensive</span><span class="savings-amount">Save $${savings.toFixed(2)}</span></div>` : '';
-
-  return `<div class="product-card">
-    <div class="card-header">
-      <div class="card-img-placeholder">${CATEGORY_EMOJIS[product.category]||'🛒'}</div>
-      <div class="card-title-area">
-        <div class="card-category">${product.category}</div>
-        <div class="card-name">${product.name}</div>
-        <div class="card-size">${product.size||''} &bull; <em>${brandLabel}</em></div>
-      </div>
-    </div>
-    <div class="card-prices">${priceRows}${savingsBar}</div>
-  </div>`;
-}
-
-// ===== BEST STORE VIEW =====
-function renderBestStore() {
-  const el = document.getElementById('bestStoreContent');
-  const selectedStores = allStores.filter(s => selectedStoreIds.has(s.id));
-  if (selectedStores.length < 2) {
-    el.innerHTML = `<div class="state-box"><div class="icon">ℹ️</div><h3>Select at least 2 stores</h3><p>Toggle stores above to compare them</p></div>`;
+  if (pageProducts.length === 0) {
+    grid.innerHTML = '<div class="loading">No products found</div>';
+    renderPagination();
     return;
   }
 
-  // Count wins per chain (cheapest on each product)
-  const chainWins = {};
-  const chainTotals = {};
-  const chainCounts = {};
-  const chains = [...new Set(selectedStores.map(getChainFromStore))];
-  chains.forEach(c => { chainWins[c] = 0; chainTotals[c] = 0; chainCounts[c] = 0; });
+  grid.innerHTML = pageProducts.map(p => {
+    // Get prices for active stores only
+    const storePrices = activeStores.map(s => {
+      const pd = getPriceForStore(p.id, s.id);
+      if (!pd) return null;
+      return { store: s, ...pd };
+    }).filter(Boolean).sort((a, b) => a.price - b.price);
 
-  allProducts.forEach(product => {
-    // Group prices by chain (use best price per chain)
-    const chainBest = {};
-    selectedStores.forEach(store => {
-      const chain = getChainFromStore(store);
-      const dp = getDisplayPrice(getPriceForStore(product.id, store.id));
-      if (dp) {
-        if (!chainBest[chain] || dp.price < chainBest[chain]) chainBest[chain] = dp.price;
-      }
-    });
-    const availChains = Object.keys(chainBest);
-    if (availChains.length < 2) return;
-    const minPrice = Math.min(...Object.values(chainBest));
-    availChains.forEach(c => {
-      chainTotals[c] = (chainTotals[c] || 0) + chainBest[c];
-      chainCounts[c] = (chainCounts[c] || 0) + 1;
-      if (chainBest[c] === minPrice) chainWins[c] = (chainWins[c] || 0) + 1;
-    });
-  });
+    if (storePrices.length === 0) return '';
 
-  const maxWins = Math.max(...Object.values(chainWins));
-  const totalProducts = allProducts.length;
+    const best = storePrices[0];
+    const worst = storePrices[storePrices.length - 1];
+    const savings = (worst.price - best.price).toFixed(2);
+    const qty = cart[p.id] || 0;
 
-  // Sort chains by wins desc
-  const sortedChains = chains.sort((a, b) => (chainWins[b]||0) - (chainWins[a]||0));
+    const priceRows = storePrices.map((sp, i) => {
+      const isBest = i === 0;
+      const displayPrice = sp.onSale && sp.salePrice ? sp.salePrice : sp.price;
+      const chainColor = CHAIN_COLORS[sp.store.chain] || '#888';
+      return `
+        <div class="price-row">
+          <div class="pr-rank ${isBest ? 'best' : ''}">${isBest ? '★' : (i+1)}</div>
+          <div style="flex:1">
+            <div class="pr-store" style="color:${chainColor}">${sp.store.name}</div>
+            <div class="pr-location">${sp.store.location}</div>
+          </div>
+          <div>
+            <span class="pr-price ${isBest ? 'best' : ''}">$${displayPrice.toFixed(2)}</span>
+            ${sp.onSale ? '<span class="sale-badge">SALE</span>' : ''}
+          </div>
+        </div>`;
+    }).join('');
 
-  const cards = sortedChains.map((chain, rank) => {
-    const wins = chainWins[chain] || 0;
-    const total = chainTotals[chain] || 0;
-    const count = chainCounts[chain] || 1;
-    const avg = total / count;
-    const pct = Math.round((wins / totalProducts) * 100);
-    const color = CHAIN_COLORS[chain] || '#888';
-    const storeCount = selectedStores.filter(s => getChainFromStore(s) === chain).length;
-    const rankLabel = rank === 0 ? '🥇 Best Value' : rank === 1 ? '🥈 Runner-up' : rank === 2 ? '🥉 Third' : '';
-
-    return `<div class="chain-card">
-      <div class="chain-card-header">
-        <div class="chain-logo" style="background:${color}">${chain[0]}</div>
-        <div>
-          <div class="chain-card-title">${chain}</div>
-          <div class="chain-card-sub">${storeCount} location${storeCount!==1?'s':''} selected${rankLabel?' · '+rankLabel:''}</div>
+    return `
+      <div class="product-card" id="pc-${p.id}">
+        <div class="pc-header">
+          <div>
+            <div class="pc-cat">${p.category || ''}</div>
+            <div class="pc-name">${p.name}</div>
+            <div class="pc-meta">${p.size || ''} ${p.name_brand ? '• ' + p.name_brand : ''}</div>
+          </div>
+          ${qty > 0 
+            ? `<div class="qty-ctrl" style="margin-left:auto">
+                <button class="qty-btn" onclick="changeQty(${p.id},-1)">−</button>
+                <span class="qty-num">${qty}</span>
+                <button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>
+               </div>`
+            : `<button class="pc-add-btn" onclick="changeQty(${p.id},1)" title="Add to cart">+</button>`
+          }
         </div>
-      </div>
-      <div class="chain-wins-bar"><div class="chain-wins-fill" style="width:${maxWins>0?Math.round((wins/maxWins)*100):0}%;background:${color}"></div></div>
-      <div class="chain-stats">
-        <div class="chain-stat"><div class="cs-num" style="color:${color}">${wins}</div><div class="cs-lbl">Cheapest Items</div></div>
-        <div class="chain-stat"><div class="cs-num" style="color:${color}">${pct}%</div><div class="cs-lbl">Win Rate</div></div>
-        <div class="chain-stat"><div class="cs-num" style="color:${color}">$${avg.toFixed(2)}</div><div class="cs-lbl">Avg Item Price</div></div>
-        <div class="chain-stat"><div class="cs-num" style="color:${color}">$${total.toFixed(0)}</div><div class="cs-lbl">Full Cart Cost</div></div>
-      </div>
-    </div>`;
+        <div class="pc-prices">
+          ${priceRows}
+          ${parseFloat(savings) > 0 ? `
+            <div class="savings-row">
+              <div class="savings-chip">💰 Best vs. Most Expensive — Save $${savings}</div>
+            </div>` : ''}
+        </div>
+      </div>`;
   }).join('');
 
-  const winner = sortedChains[0];
-  const loser = sortedChains[sortedChains.length - 1];
-  const cartSavings = (chainTotals[loser] - chainTotals[winner]).toFixed(2);
-
-  el.innerHTML = `
-    <div class="summary-banner" style="margin-bottom:20px;">
-      <div class="summary-stat"><div class="num">${winner}</div><div class="lbl">Best Value Chain</div></div>
-      <div class="summary-divider"></div>
-      <div class="summary-stat"><div class="num">$${cartSavings}</div><div class="lbl">vs. Most Expensive</div></div>
-      <div class="summary-divider"></div>
-      <div class="summary-stat"><div class="num">${chainWins[winner]||0}</div><div class="lbl">Items Where Cheapest</div></div>
-      <div class="summary-divider"></div>
-      <div class="summary-stat"><div class="num">${Math.round(((chainWins[winner]||0)/totalProducts)*100)}%</div><div class="lbl">Win Rate</div></div>
-    </div>
-    <div class="best-store-grid">${cards}</div>
-    <p class="best-store-note">Based on ${brandMode === 'name' ? 'name brand' : 'store brand'} prices across ${totalProducts} products at ${selectedStores.length} selected stores. Switch to Store Brand mode for Aldi comparisons.</p>`;
+  renderPagination();
 }
 
-// ===== PAGINATION =====
-function renderPagination(totalPages) {
-  const el = document.getElementById('pagination');
-  if (totalPages <= 1) { el.innerHTML = ''; return; }
-  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>← Prev</button>`;
-  for (let i = 1; i <= totalPages; i++) {
-    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
-    else if (Math.abs(i - currentPage) === 3) html += `<span style="padding:7px 4px;color:#999;">…</span>`;
+function renderPagination() {
+  const total = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  const pg = document.getElementById('pagination');
+  if (total <= 1) { pg.innerHTML = ''; return; }
+  let html = `<button class="page-btn page-nav" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>← Prev</button>`;
+  for (let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || Math.abs(i - currentPage) <= 2) {
+      html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    } else if (Math.abs(i - currentPage) === 3) {
+      html += `<span style="padding:0 4px;color:#bbb">…</span>`;
+    }
   }
-  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>Next →</button>`;
-  el.innerHTML = html;
+  html += `<button class="page-btn page-nav" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>Next →</button>`;
+  pg.innerHTML = html;
 }
 
-function goPage(p) { currentPage = p; renderAll(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function goPage(p) {
+  const total = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  if (p < 1 || p > total) return;
+  currentPage = p;
+  renderProducts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-// ===== START =====
-init();
+function changeQty(productId, delta) {
+  cart[productId] = Math.max(0, (cart[productId] || 0) + delta);
+  if (cart[productId] === 0) delete cart[productId];
+  updateCartCount();
+  renderCart();
+  // Re-render just this product card
+  const p = allProducts.find(x => x.id === productId);
+  if (p) {
+    const activeStores = getActiveStores();
+    const storePrices = activeStores.map(s => {
+      const pd = getPriceForStore(p.id, s.id);
+      if (!pd) return null;
+      return { store: s, ...pd };
+    }).filter(Boolean).sort((a, b) => a.price - b.price);
+    const qty = cart[productId] || 0;
+    const el = document.getElementById(`pc-${productId}`);
+    if (el) {
+      const header = el.querySelector('.pc-header');
+      // Update just the add/qty control
+      const existing = header.querySelector('.qty-ctrl, .pc-add-btn');
+      if (existing) existing.remove();
+      const ctrl = document.createElement('div');
+      if (qty > 0) {
+        ctrl.className = 'qty-ctrl';
+        ctrl.style.marginLeft = 'auto';
+        ctrl.innerHTML = `<button class="qty-btn" onclick="changeQty(${p.id},-1)">−</button><span class="qty-num">${qty}</span><button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>`;
+      } else {
+        ctrl.className = 'pc-add-btn';
+        ctrl.title = 'Add to cart';
+        ctrl.textContent = '+';
+        ctrl.onclick = () => changeQty(p.id, 1);
+      }
+      header.appendChild(ctrl);
+    }
+  }
+}
+
+function updateCartCount() {
+  const total = Object.values(cart).reduce((a, b) => a + b, 0);
+  document.getElementById('cartCount').textContent = total;
+}
+
+function renderCart() {
+  const cartIds = Object.keys(cart).map(Number);
+  const body = document.getElementById('cartBody');
+
+  if (cartIds.length === 0) {
+    body.innerHTML = '<div class="cp-empty"><div class="cp-empty-icon">🛒</div><div>Your cart is empty</div><div style="margin-top:6px;font-size:12px;color:#bbb">Tap + on any product to add it</div></div>';
+    document.getElementById('cpSub').textContent = 'Add items to compare store totals';
+    document.getElementById('statCart').textContent = '$0.00';
+    return;
+  }
+
+  // Build cart items HTML
+  let itemsHtml = cartIds.map(id => {
+    const p = allProducts.find(x => x.id === id);
+    if (!p) return '';
+    const qty = cart[id];
+    return `
+      <div class="cart-item">
+        <div class="ci-name">
+          ${p.name}
+          <span class="ci-meta">${p.size || ''} × ${qty}</span>
+        </div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${id},-1)">−</button>
+          <span class="qty-num">${qty}</span>
+          <button class="qty-btn" onclick="changeQty(${id},1)">+</button>
+        </div>
+        <button class="btn-remove" onclick="removeItem(${id})">✕</button>
+      </div>`;
+  }).join('');
+
+  // Calculate per-store totals
+  const activeStores = getActiveStores();
+  const storeTotals = activeStores.map(s => {
+    let total = 0;
+    let hasAll = true;
+    cartIds.forEach(id => {
+      const pd = getPriceForStore(id, s.id);
+      if (!pd) { hasAll = false; return; }
+      const price = pd.onSale && pd.salePrice ? pd.salePrice : pd.price;
+      total += price * cart[id];
+    });
+    return { store: s, total: hasAll ? total : null };
+  }).filter(s => s.total !== null).sort((a, b) => a.total - b.total);
+
+  let totalsHtml = '';
+  if (storeTotals.length > 0) {
+    const winner = storeTotals[0];
+    const worst = storeTotals[storeTotals.length - 1];
+    const savings = (worst.total - winner.total).toFixed(2);
+
+    document.getElementById('statCart').textContent = '$' + winner.total.toFixed(2);
+    document.getElementById('cpSub').textContent = `${cartIds.length} item${cartIds.length>1?'s':''} • Best: $${winner.total.toFixed(2)}`;
+
+    totalsHtml = `
+      <div class="totals-section">
+        <div class="totals-label">Store Totals</div>
+        ${storeTotals.map((st, i) => `
+          <div class="store-total-row ${i===0?'winner':''}">
+            <div>
+              <div class="st-name">${st.store.name}</div>
+              <div style="font-size:11px;color:#888">${st.store.location}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              ${i===0 ? '<span class="winner-badge">BEST</span>' : ''}
+              <div class="st-price">$${st.total.toFixed(2)}</div>
+            </div>
+          </div>`).join('')}
+        ${parseFloat(savings) > 0 ? `
+          <div class="savings-summary">
+            <div class="ss-label">You Could Save</div>
+            <div class="ss-amount">$${savings}</div>
+            <div class="ss-sub">vs. most expensive store</div>
+          </div>` : ''}
+        <button class="clear-btn" onclick="clearCart()">Clear Cart</button>
+      </div>`;
+  }
+
+  body.innerHTML = itemsHtml + totalsHtml;
+}
+
+function removeItem(id) {
+  delete cart[id];
+  updateCartCount();
+  renderCart();
+  renderProducts();
+}
+
+function clearCart() {
+  cart = {};
+  updateCartCount();
+  renderCart();
+  renderProducts();
+}
+
+function scrollToCart() {
+  document.getElementById('cartPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+loadData();
 </script>
 </body>
 </html>
