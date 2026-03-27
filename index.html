@@ -54,6 +54,8 @@
     .pr-price { font-size: 15px; font-weight: 800; color: #1a1a1a; }
     .pr-price.best { color: #43b02a; }
     .sale-badge { background: #ef4444; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; margin-left: 6px; }
+    .price-row.on-sale { background: #fff8f0; border-radius: 8px; margin: 1px -4px; padding-left: 4px; padding-right: 4px; }
+    .pr-price-orig { font-size: 11px; color: #bbb; text-decoration: line-through; margin-right: 4px; }
     .savings-row { display: flex; align-items: center; justify-content: flex-end; padding: 8px 0 0; }
     .savings-chip { background: #f0fdf4; color: #16a34a; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
 
@@ -353,13 +355,14 @@ function renderProducts() {
       const displayPrice = sp.onSale && sp.salePrice ? sp.salePrice : sp.price;
       const chainColor = CHAIN_COLORS[sp.store.chain] || '#888';
       return `
-        <div class="price-row">
+        <div class="price-row${sp.onSale ? ' on-sale' : ''}">
           <div class="pr-rank ${isBest ? 'best' : ''}">${isBest ? '★' : (i+1)}</div>
           <div style="flex:1">
             <div class="pr-store" style="color:${chainColor}">${sp.store.name}</div>
             <div class="pr-location">${sp.store.location}</div>
           </div>
-          <div>
+          <div style="display:flex;align-items:center;gap:4px">
+            ${sp.onSale && sp.salePrice ? `<span class="pr-price-orig">$${sp.price.toFixed(2)}</span>` : ''}
             <span class="pr-price ${isBest ? 'best' : ''}">$${displayPrice.toFixed(2)}</span>
             ${sp.onSale ? '<span class="sale-badge">SALE</span>' : ''}
           </div>
